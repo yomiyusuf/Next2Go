@@ -41,4 +41,5 @@ dependencies {
     testImplementation(libs.retrofit.converter.moshi)
     testImplementation(libs.moshi)
     testImplementation(libs.moshi.kotlin)
+    testImplementation(libs.mockk)
 }

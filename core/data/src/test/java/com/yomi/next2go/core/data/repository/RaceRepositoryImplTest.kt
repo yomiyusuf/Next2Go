@@ -8,6 +8,8 @@ import com.yomi.next2go.core.network.dto.AdvertisedStartDto
 import com.yomi.next2go.core.network.dto.ApiResponse
 import com.yomi.next2go.core.network.dto.RaceDto
 import com.yomi.next2go.core.network.dto.RacingData
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -20,25 +22,25 @@ class RaceRepositoryImplTest {
 
     @Test
     fun getNextToGoRaces_withValidData_returnsSuccess() = runTest {
-        val mockApiService = object : RacingApiService {
-            override suspend fun getNextRaces(method: String, count: Int): ApiResponse {
-                val raceDto = RaceDto(
-                    raceId = "race-1",
-                    raceName = "Test Race",
-                    raceNumber = 1,
-                    meetingName = "Test Meeting",
-                    categoryId = "4a2788f8-e825-4d36-9894-efd4baf1cfae", // HORSE
-                    advertisedStart = AdvertisedStartDto(seconds = 1762340700)
-                )
-                return ApiResponse(
-                    status = 200,
-                    data = RacingData(
-                        nextToGoIds = listOf("race-1"),
-                        raceSummaries = mapOf("race-1" to raceDto)
-                    ),
-                    message = "OK"
-                )
-            }
+        val raceDto = RaceDto(
+            raceId = "race-1",
+            raceName = "Test Race",
+            raceNumber = 1,
+            meetingName = "Test Meeting",
+            categoryId = "4a2788f8-e825-4d36-9894-efd4baf1cfae", // HORSE
+            advertisedStart = AdvertisedStartDto(seconds = 1762340700)
+        )
+        val apiResponse = ApiResponse(
+            status = 200,
+            data = RacingData(
+                nextToGoIds = listOf("race-1"),
+                raceSummaries = mapOf("race-1" to raceDto)
+            ),
+            message = "OK"
+        )
+
+        val mockApiService = mockk<RacingApiService> {
+            coEvery { getNextRaces(any(), any()) } returns apiResponse
         }
 
         val repository = RaceRepositoryImpl(mockApiService)
@@ -54,10 +56,10 @@ class RaceRepositoryImplTest {
 
     @Test
     fun getNextToGoRaces_withHttpError_returnsError() = runTest {
-        val mockApiService = object : RacingApiService {
-            override suspend fun getNextRaces(method: String, count: Int): ApiResponse {
-                throw HttpException(Response.error<Any>(500, "".toResponseBody()))
-            }
+        val mockApiService = mockk<RacingApiService> {
+            coEvery { getNextRaces(any(), any()) } throws HttpException(
+                Response.error<Any>(500, "".toResponseBody())
+            )
         }
 
         val repository = RaceRepositoryImpl(mockApiService)
