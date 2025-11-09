@@ -13,24 +13,6 @@ class GetNextRacesUseCase(
     private val repository: RaceRepository,
     private val clock: Clock,
 ) {
-    suspend fun execute(
-        count: Int = 10,
-        categories: Set<CategoryId> = emptySet(),
-    ): Result<List<Race>> {
-        return when (val result = repository.getNextToGoRaces(count)) {
-            is Result.Success -> {
-                val filteredRaces = result.data
-                    .filter { race -> isRaceValid(race) }
-                    .filter { race -> categories.isEmpty() || race.categoryId in categories }
-                    .sortedBy { it.advertisedStart }
-                    .take(count)
-                
-                Result.Success(filteredRaces)
-            }
-            is Result.Error -> result
-        }
-    }
-
     fun executeStream(
         count: Int = 10,
         categories: Set<CategoryId> = emptySet(),
@@ -38,17 +20,24 @@ class GetNextRacesUseCase(
         return repository.getNextToGoRacesStream(count).map { result ->
             when (result) {
                 is Result.Success -> {
-                    val filteredRaces = result.data
-                        .filter { race -> isRaceValid(race) }
-                        .filter { race -> categories.isEmpty() || race.categoryId in categories }
-                        .sortedBy { it.advertisedStart }
-                        .take(count)
-                    
+                    val filteredRaces = filterAndSortRaces(result.data, categories, count)
                     Result.Success(filteredRaces)
                 }
                 is Result.Error -> result
             }
         }
+    }
+
+    private fun filterAndSortRaces(
+        races: List<Race>,
+        categories: Set<CategoryId>,
+        count: Int
+    ): List<Race> {
+        return races
+            .filter { race -> isRaceValid(race) }
+            .filter { race -> categories.isEmpty() || race.categoryId in categories }
+            .sortedBy { it.advertisedStart }
+            .take(count)
     }
 
     private fun isRaceValid(race: Race): Boolean {

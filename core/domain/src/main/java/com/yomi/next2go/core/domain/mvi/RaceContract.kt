@@ -1,11 +1,11 @@
 package com.yomi.next2go.core.domain.mvi
 
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.domain.model.Race
+import com.yomi.next2go.core.domain.model.RaceDisplayModel
 
 data class RaceUiState(
     val isLoading: Boolean = false,
-    val races: List<Race> = emptyList(),
+    val displayRaces: List<RaceDisplayModel> = emptyList(),
     val selectedCategories: Set<CategoryId> = emptySet(),
     val error: String? = null,
 ) : UiState
