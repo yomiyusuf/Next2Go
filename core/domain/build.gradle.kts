@@ -33,9 +33,13 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     
+    // ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
 }
