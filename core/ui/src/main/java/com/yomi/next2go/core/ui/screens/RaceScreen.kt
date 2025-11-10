@@ -36,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yomi.next2go.core.domain.model.CategoryColor
@@ -192,13 +194,16 @@ private fun EmptyState(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = "No races currently available. Try refreshing or changing your filters."
+        },
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = "No races available",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -213,7 +218,10 @@ private fun RefreshIndicator(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
                 shape = RoundedCornerShape(16.dp)
             )
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .semantics {
+                contentDescription = "Refreshing race data in background"
+            },
         contentAlignment = Alignment.Center,
     ) {
         Row(
@@ -242,7 +250,9 @@ private fun RaceList(
     val spacing = LocalSpacing.current
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            contentDescription = "List of ${displayRaces.size} upcoming races"
+        },
         contentPadding = PaddingValues(bottom = spacing.large),
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
     ) {
@@ -256,6 +266,7 @@ private fun RaceList(
                 countdownText = displayRace.countdownText,
                 categoryId = displayRace.categoryId,
                 isLive = displayRace.isLive,
+                contentDescription = displayRace.contentDescription,
             )
         }
     }
@@ -268,6 +279,7 @@ private fun AnimatedRaceCard(
     countdownText: String,
     categoryId: CategoryId,
     isLive: Boolean,
+    contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -292,6 +304,7 @@ private fun AnimatedRaceCard(
             countdownText = countdownText,
             categoryId = categoryId,
             isLive = isLive,
+            contentDescription = contentDescription,
         )
     }
 }
@@ -313,6 +326,7 @@ fun RaceScreenPreview() {
                         categoryColor = CategoryColor.GREEN,
                         categoryId = CategoryId.HORSE,
                         isLive = false,
+                        contentDescription = "Horse Racing race number 8 at BATHURST. Starting in 3m 0s.",
                     ),
                     RaceDisplayModel(
                         id = "2",
@@ -324,6 +338,7 @@ fun RaceScreenPreview() {
                         categoryColor = CategoryColor.RED,
                         categoryId = CategoryId.GREYHOUND,
                         isLive = false,
+                        contentDescription = "Greyhound Racing race number 2 at CANNINGTON. Starting in 5m 0s.",
                     ),
                 ),
                 selectedCategories = setOf(CategoryId.HORSE),

@@ -11,4 +11,6 @@ data class RaceDisplayModel(
     val categoryColor: CategoryColor,
     val categoryId: CategoryId,
     val isLive: Boolean,
+    // Accessibility content description for screen readers
+    val contentDescription: String,
 )

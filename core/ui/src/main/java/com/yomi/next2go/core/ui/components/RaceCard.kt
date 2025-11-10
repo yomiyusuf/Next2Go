@@ -20,7 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yomi.next2go.core.domain.model.CategoryId
@@ -39,13 +42,18 @@ fun RaceCard(
     countdownText: String,
     categoryId: CategoryId,
     isLive: Boolean,
+    contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     val spacing = LocalSpacing.current
     val categoryInfo = getCategoryInfo(categoryId)
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics {
+                this.contentDescription = contentDescription
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -75,6 +83,8 @@ fun RaceCard(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                 )
             }
 
@@ -108,6 +118,8 @@ fun RaceCard(
                     text = raceName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -120,6 +132,8 @@ fun RaceCard(
                     fontWeight = FontWeight.Bold,
                 ),
                 textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -164,6 +178,7 @@ fun RaceCardPreview() {
                 countdownText = "2m 33s",
                 categoryId = CategoryId.HORSE,
                 isLive = false,
+                contentDescription = "Horse Racing race number 8 at BATHURST. Starting in 2m 33s.",
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -174,6 +189,7 @@ fun RaceCardPreview() {
                 countdownText = "LIVE",
                 categoryId = CategoryId.GREYHOUND,
                 isLive = true,
+                contentDescription = "Greyhound Racing race number 1 at KILKENNY. Race is currently live.",
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -184,6 +200,7 @@ fun RaceCardPreview() {
                 countdownText = "1m 15s",
                 categoryId = CategoryId.HARNESS,
                 isLive = false,
+                contentDescription = "Harness Racing race number 5 at ALBION PARK. Starting in 1m 15s.",
             )
         }
     }

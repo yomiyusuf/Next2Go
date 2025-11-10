@@ -11,16 +11,26 @@ class RaceDisplayModelMapper(
     private val clock: Clock,
 ) {
     fun mapToDisplayModel(race: Race): RaceDisplayModel {
+        val countdownText = RaceCountdownFormatter.formatCountdown(race.advertisedStart, clock)
+        val isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock)
+        
         return RaceDisplayModel(
             id = race.id,
             raceName = race.meetingName,
             raceNumber = race.number,
             runnerName = "Next Runner",
             runnerNumber = 1,
-            countdownText = RaceCountdownFormatter.formatCountdown(race.advertisedStart, clock),
+            countdownText = countdownText,
             categoryColor = getCategoryColor(race.categoryId),
             categoryId = race.categoryId,
-            isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock),
+            isLive = isLive,
+            contentDescription = buildContentDescription(
+                categoryId = race.categoryId,
+                raceNumber = race.number,
+                meetingName = race.meetingName,
+                countdownText = countdownText,
+                isLive = isLive
+            ),
         )
     }
 
@@ -29,6 +39,31 @@ class RaceDisplayModelMapper(
             CategoryId.HORSE -> CategoryColor.GREEN
             CategoryId.GREYHOUND -> CategoryColor.RED
             CategoryId.HARNESS -> CategoryColor.YELLOW
+        }
+    }
+    
+    private fun buildContentDescription(
+        categoryId: CategoryId,
+        raceNumber: Int,
+        meetingName: String,
+        countdownText: String,
+        isLive: Boolean
+    ): String {
+        val categoryName = when (categoryId) {
+            CategoryId.HORSE -> "Horse Racing"
+            CategoryId.GREYHOUND -> "Greyhound Racing"
+            CategoryId.HARNESS -> "Harness Racing"
+        }
+        
+        return buildString {
+            append("$categoryName race ")
+            append("number $raceNumber ")
+            append("at $meetingName. ")
+            if (isLive) {
+                append("Race is currently live.")
+            } else {
+                append("Starting in $countdownText.")
+            }
         }
     }
 }
