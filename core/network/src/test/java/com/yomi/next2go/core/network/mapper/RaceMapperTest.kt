@@ -3,10 +3,10 @@ package com.yomi.next2go.core.network.mapper
 import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.network.dto.AdvertisedStartDto
 import com.yomi.next2go.core.network.dto.RaceDto
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Test
-import java.time.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlinx.datetime.Instant
 
 class RaceMapperTest {
 
@@ -31,7 +31,7 @@ class RaceMapperTest {
         assertEquals(5, result?.number)
         assertEquals("Test Meeting", result?.meetingName)
         assertEquals(CategoryId.HORSE, result?.categoryId)
-        assertEquals(Instant.ofEpochSecond(1762340700L), result?.advertisedStart)
+        assertEquals(Instant.fromEpochSeconds(1762340700L), result?.advertisedStart)
     }
 
     @Test
@@ -114,6 +114,6 @@ class RaceMapperTest {
         assertEquals(8, result?.number)
         assertEquals("Redcliffe", result?.meetingName)
         assertEquals(CategoryId.HARNESS, result?.categoryId)
-        assertEquals(Instant.ofEpochSecond(1762340700L), result?.advertisedStart)
+        assertEquals(Instant.fromEpochSeconds(1762340700L), result?.advertisedStart)
     }
 }

@@ -3,9 +3,9 @@ package com.yomi.next2go.core.domain.repository
 import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.DataError
 import com.yomi.next2go.core.domain.model.Race
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import java.time.Instant
+import kotlinx.datetime.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ResultTest {
     @Test
@@ -16,7 +16,7 @@ class ResultTest {
             number = 1,
             meetingName = "Test Meeting",
             categoryId = CategoryId.HORSE,
-            advertisedStart = Instant.now(),
+            advertisedStart = Instant.fromEpochSeconds(1000),
         )
         val result = Result.Success(listOf(race))
 

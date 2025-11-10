@@ -41,6 +41,8 @@ dependencies {
     
     testImplementation(libs.junit)
     testImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.robolectric)
+    testImplementation(kotlin("test"))
     
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

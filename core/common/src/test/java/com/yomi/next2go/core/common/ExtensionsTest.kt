@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 class ExtensionsTest {
 
@@ -13,8 +13,8 @@ class ExtensionsTest {
 
     @Test
     fun toCountdownString_futureTime_returnsMinutesAndSeconds() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val future = Instant.parse("2024-01-01T12:02:33Z") // 2m 33s in future
+        val now = Instant.fromEpochSeconds(1000)
+        val future = Instant.fromEpochSeconds(1153) // 153s = 2m 33s in future
         testClock.setNow(now)
 
         val result = future.toCountdownString(testClock)
@@ -24,8 +24,8 @@ class ExtensionsTest {
 
     @Test
     fun toCountdownString_exactlyOneMinute_returnsOneMinuteZeroSeconds() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val future = Instant.parse("2024-01-01T12:01:00Z")
+        val now = Instant.fromEpochSeconds(1000)
+        val future = Instant.fromEpochSeconds(1060) // 60s = 1m in future
         testClock.setNow(now)
 
         val result = future.toCountdownString(testClock)
@@ -35,8 +35,8 @@ class ExtensionsTest {
 
     @Test
     fun toCountdownString_withinStartingThreshold_returnsStarting() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val past = Instant.parse("2024-01-01T11:59:30Z") // 30 seconds past
+        val now = Instant.fromEpochSeconds(1000)
+        val past = Instant.fromEpochSeconds(970) // 30 seconds past
         testClock.setNow(now)
 
         val result = past.toCountdownString(testClock)
@@ -46,8 +46,8 @@ class ExtensionsTest {
 
     @Test
     fun toCountdownString_pastStartingThreshold_returnsEmpty() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val past = Instant.parse("2024-01-01T11:58:30Z") // 90 seconds past
+        val now = Instant.fromEpochSeconds(1000)
+        val past = Instant.fromEpochSeconds(910) // 90 seconds past
         testClock.setNow(now)
 
         val result = past.toCountdownString(testClock)
@@ -57,8 +57,8 @@ class ExtensionsTest {
 
     @Test
     fun isExpired_withinThreshold_returnsFalse() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val raceStart = Instant.parse("2024-01-01T11:59:30Z") // 30 seconds past
+        val now = Instant.fromEpochSeconds(1000)
+        val raceStart = Instant.fromEpochSeconds(970) // 30 seconds past
         testClock.setNow(now)
 
         val result = raceStart.isExpired(testClock)
@@ -68,8 +68,8 @@ class ExtensionsTest {
 
     @Test
     fun isExpired_pastThreshold_returnsTrue() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val raceStart = Instant.parse("2024-01-01T11:58:30Z") // 90 seconds past
+        val now = Instant.fromEpochSeconds(1000)
+        val raceStart = Instant.fromEpochSeconds(910) // 90 seconds past
         testClock.setNow(now)
 
         val result = raceStart.isExpired(testClock)
@@ -79,8 +79,8 @@ class ExtensionsTest {
 
     @Test
     fun isExpired_customThreshold_respectsCustomValue() {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
-        val raceStart = Instant.parse("2024-01-01T11:58:00Z") // 120 seconds past
+        val now = Instant.fromEpochSeconds(1000)
+        val raceStart = Instant.fromEpochSeconds(880) // 120 seconds past
         testClock.setNow(now)
 
         val result = raceStart.isExpired(testClock, expiredThresholdSeconds = 180)
@@ -89,7 +89,7 @@ class ExtensionsTest {
     }
 
     private class TestClock : Clock {
-        private var currentTime = Instant.now()
+        private var currentTime = Instant.fromEpochSeconds(0)
 
         fun setNow(instant: Instant) {
             currentTime = instant

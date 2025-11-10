@@ -1,25 +1,59 @@
 package com.yomi.next2go.core.domain.mvi
 
 import app.cash.turbine.test
+import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
+import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.DataError
 import com.yomi.next2go.core.domain.model.Race
+import com.yomi.next2go.core.domain.model.RaceDisplayModel
 import com.yomi.next2go.core.domain.repository.Result
+import com.yomi.next2go.core.domain.timer.CountdownTimer
 import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import java.time.Instant
+import kotlinx.datetime.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RaceViewModelTest {
     private val mockUseCase = mockk<GetNextRacesUseCase>()
+    private val mockDisplayModelMapper = mockk<RaceDisplayModelMapper>()
+    private val mockCountdownTimer = mockk<CountdownTimer>(relaxed = true)
+    
+    private val sampleDisplayRaces = listOf(
+        RaceDisplayModel(
+            id = "1",
+            raceName = "Meeting 1 R1",
+            raceNumber = 1,
+            runnerName = "Next Runner",
+            runnerNumber = 1,
+            jockeyName = "TBA",
+            bestTime = "--:--",
+            odds = "--",
+            countdownText = "5m 0s",
+            categoryColor = CategoryColor.GREEN,
+            isLive = false
+        ),
+        RaceDisplayModel(
+            id = "2",
+            raceName = "Meeting 2 R2",
+            raceNumber = 2,
+            runnerName = "Next Runner",
+            runnerNumber = 1,
+            jockeyName = "TBA",
+            bestTime = "--:--",
+            odds = "--",
+            countdownText = "10m 0s",
+            categoryColor = CategoryColor.RED,
+            isLive = false
+        )
+    )
     
     private val sampleRaces = listOf(
         Race(
@@ -28,7 +62,7 @@ class RaceViewModelTest {
             number = 1,
             meetingName = "Meeting 1",
             categoryId = CategoryId.HORSE,
-            advertisedStart = Instant.now().plusSeconds(300)
+            advertisedStart = Instant.fromEpochSeconds(1000)
         ),
         Race(
             id = "2", 
@@ -36,7 +70,7 @@ class RaceViewModelTest {
             number = 2,
             meetingName = "Meeting 2",
             categoryId = CategoryId.GREYHOUND,
-            advertisedStart = Instant.now().plusSeconds(600)
+            advertisedStart = Instant.fromEpochSeconds(2000)
         )
     )
 
@@ -44,8 +78,9 @@ class RaceViewModelTest {
     fun initialState_isCorrect() = runTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
+        every { mockDisplayModelMapper.mapToDisplayModel(any()) } returns sampleDisplayRaces[0]
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -54,19 +89,19 @@ class RaceViewModelTest {
             
             if (firstState.isLoading) {
                 // If we catch loading state, verify it and wait for completion
-                assertTrue(firstState.races.isEmpty())
+                assertTrue(firstState.displayRaces.isEmpty())
                 assertTrue(firstState.selectedCategories.isEmpty())
                 assertNull(firstState.error)
                 
                 val loadedState = awaitItem()
                 assertFalse(loadedState.isLoading)
-                assertTrue(loadedState.races.isEmpty())
+                assertTrue(loadedState.displayRaces.isEmpty())
                 assertTrue(loadedState.selectedCategories.isEmpty())
                 assertNull(loadedState.error)
             } else {
                 // If loading completed immediately, verify final state
                 assertFalse(firstState.isLoading)
-                assertTrue(firstState.races.isEmpty())
+                assertTrue(firstState.displayRaces.isEmpty())
                 assertTrue(firstState.selectedCategories.isEmpty())
                 assertNull(firstState.error)
             }
@@ -77,8 +112,10 @@ class RaceViewModelTest {
     fun loadRaces_success_updatesStateCorrectly() = runTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(sampleRaces))
+        every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[0]) } returns sampleDisplayRaces[0]
+        every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[1]) } returns sampleDisplayRaces[1]
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -89,14 +126,14 @@ class RaceViewModelTest {
                 // If we catch loading state, wait for success state
                 val loadedState = awaitItem()
                 assertFalse(loadedState.isLoading)
-                assertEquals(2, loadedState.races.size)
-                assertEquals("Horse Race 1", loadedState.races.first().name)
+                assertEquals(2, loadedState.displayRaces.size)
+                assertEquals("Meeting 1 R1", loadedState.displayRaces.first().raceName)
                 assertNull(loadedState.error)
             } else {
                 // If loading completed immediately, verify success state
                 assertFalse(firstState.isLoading)
-                assertEquals(2, firstState.races.size)
-                assertEquals("Horse Race 1", firstState.races.first().name)
+                assertEquals(2, firstState.displayRaces.size)
+                assertEquals("Meeting 1 R1", firstState.displayRaces.first().raceName)
                 assertNull(firstState.error)
             }
         }
@@ -108,7 +145,7 @@ class RaceViewModelTest {
         val error = DataError.NetworkUnavailable
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Error(error))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -119,12 +156,12 @@ class RaceViewModelTest {
                 // If we catch loading state, wait for error state
                 val errorState = awaitItem()
                 assertFalse(errorState.isLoading)
-                assertTrue(errorState.races.isEmpty())
+                assertTrue(errorState.displayRaces.isEmpty())
                 assertEquals("Network unavailable", errorState.error)
             } else {
                 // If error came immediately, verify it
                 assertFalse(firstState.isLoading)
-                assertTrue(firstState.races.isEmpty())
+                assertTrue(firstState.displayRaces.isEmpty())
                 assertEquals("Network unavailable", firstState.error)
             }
         }
@@ -136,7 +173,7 @@ class RaceViewModelTest {
         val error = DataError.Timeout
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Error(error))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.sideEffect.test {
@@ -150,9 +187,9 @@ class RaceViewModelTest {
     fun refreshRaces_success_emitsRefreshComplete() = runTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
-        coEvery { mockUseCase.execute(any(), any()) } returns Result.Success(sampleRaces)
+        every { mockDisplayModelMapper.mapToDisplayModel(any()) } returns sampleDisplayRaces[0]
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When
         viewModel.handleIntent(RaceIntent.RefreshRaces)
@@ -169,7 +206,7 @@ class RaceViewModelTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -200,7 +237,7 @@ class RaceViewModelTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -240,7 +277,7 @@ class RaceViewModelTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {
@@ -289,7 +326,7 @@ class RaceViewModelTest {
         // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
         
-        val viewModel = RaceViewModel(mockUseCase)
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
         
         // When/Then
         viewModel.uiState.test {

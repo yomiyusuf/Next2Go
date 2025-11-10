@@ -1,13 +1,13 @@
 package com.yomi.next2go.core.domain.mvi
 
+import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.domain.model.Race
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import java.time.Instant
+import com.yomi.next2go.core.domain.model.RaceDisplayModel
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RaceContractTest {
 
@@ -16,35 +16,40 @@ class RaceContractTest {
         val state = RaceUiState()
         
         assertFalse(state.isLoading)
-        assertTrue(state.races.isEmpty())
+        assertTrue(state.displayRaces.isEmpty())
         assertTrue(state.selectedCategories.isEmpty())
         assertNull(state.error)
     }
 
     @Test
     fun raceUiState_withCustomValues_retainsValues() {
-        val races = listOf(
-            Race(
+        val displayRaces = listOf(
+            RaceDisplayModel(
                 id = "1",
-                name = "Test Race",
-                number = 1,
-                meetingName = "Test Meeting",
-                categoryId = CategoryId.HORSE,
-                advertisedStart = Instant.now()
+                raceName = "Test Race",
+                raceNumber = 1,
+                runnerName = "Test Runner",
+                runnerNumber = 1,
+                jockeyName = "Test Jockey",
+                bestTime = "30.00",
+                odds = "2.50",
+                countdownText = "5m 30s",
+                categoryColor = CategoryColor.GREEN,
+                isLive = false
             )
         )
         val selectedCategories = setOf(CategoryId.HORSE, CategoryId.GREYHOUND)
         
         val state = RaceUiState(
             isLoading = true,
-            races = races,
+            displayRaces = displayRaces,
             selectedCategories = selectedCategories,
             error = "Test error"
         )
         
         assertTrue(state.isLoading)
-        assertEquals(1, state.races.size)
-        assertEquals("Test Race", state.races.first().name)
+        assertEquals(1, state.displayRaces.size)
+        assertEquals("Test Race", state.displayRaces.first().raceName)
         assertEquals(2, state.selectedCategories.size)
         assertTrue(state.selectedCategories.contains(CategoryId.HORSE))
         assertTrue(state.selectedCategories.contains(CategoryId.GREYHOUND))
@@ -55,7 +60,7 @@ class RaceContractTest {
     fun raceUiState_copy_preservesUnchangedValues() {
         val originalState = RaceUiState(
             isLoading = false,
-            races = emptyList(),
+            displayRaces = emptyList(),
             selectedCategories = setOf(CategoryId.HORSE),
             error = null
         )
@@ -63,7 +68,7 @@ class RaceContractTest {
         val copiedState = originalState.copy(isLoading = true)
         
         assertTrue(copiedState.isLoading) // Changed
-        assertTrue(copiedState.races.isEmpty()) // Preserved
+        assertTrue(copiedState.displayRaces.isEmpty()) // Preserved
         assertTrue(copiedState.selectedCategories.contains(CategoryId.HORSE)) // Preserved
         assertNull(copiedState.error) // Preserved
     }

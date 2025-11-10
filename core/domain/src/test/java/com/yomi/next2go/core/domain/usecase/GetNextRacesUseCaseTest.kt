@@ -6,20 +6,21 @@ import com.yomi.next2go.core.domain.model.DataError
 import com.yomi.next2go.core.domain.model.Race
 import com.yomi.next2go.core.domain.repository.RaceRepository
 import com.yomi.next2go.core.domain.repository.Result
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import java.time.Instant
+import kotlinx.datetime.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class GetNextRacesUseCaseTest {
 
     @Test
     fun execute_withValidRaces_returnsFilteredAndSortedRaces() = runTest {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
+        val now = Instant.fromEpochSeconds(1000)
         val mockClock = mockk<Clock> {
             every { now() } returns now
         }
@@ -30,7 +31,7 @@ class GetNextRacesUseCaseTest {
             number = 1,
             meetingName = "Meeting 1",
             categoryId = CategoryId.HORSE,
-            advertisedStart = now.plusSeconds(300), // 5 minutes future
+            advertisedStart = Instant.fromEpochSeconds(1300), // 5 minutes future
         )
         
         val race2 = Race(
@@ -39,18 +40,18 @@ class GetNextRacesUseCaseTest {
             number = 2,
             meetingName = "Meeting 2",
             categoryId = CategoryId.GREYHOUND,
-            advertisedStart = now.plusSeconds(600), // 10 minutes future
+            advertisedStart = Instant.fromEpochSeconds(1600), // 10 minutes future
         )
 
         val mockRepository = mockk<RaceRepository> {
-            coEvery { getNextToGoRaces(10) } returns Result.Success(listOf(race2, race1)) // Unsorted
+            every { getNextToGoRacesStream(10) } returns flowOf(Result.Success(listOf(race2, race1))) // Unsorted
         }
 
         val useCase = GetNextRacesUseCase(mockRepository, mockClock)
-        val result = useCase.execute(count = 10)
+        val result = useCase.executeStream(count = 10).first()
 
         assertTrue(result is Result.Success)
-        val races = (result as Result.Success).data
+        val races = result.data
         assertEquals(2, races.size)
         // Should be sorted by advertised start time
         assertEquals("1", races[0].id) // Earlier race first
@@ -59,7 +60,7 @@ class GetNextRacesUseCaseTest {
 
     @Test
     fun execute_withCategoryFilter_returnsOnlyMatchingCategories() = runTest {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
+        val now = Instant.fromEpochSeconds(1000)
         val mockClock = mockk<Clock> {
             every { now() } returns now
         }
@@ -70,7 +71,7 @@ class GetNextRacesUseCaseTest {
             number = 1,
             meetingName = "Meeting 1",
             categoryId = CategoryId.HORSE,
-            advertisedStart = now.plusSeconds(300),
+            advertisedStart = Instant.fromEpochSeconds(1300),
         )
         
         val greyhoundRace = Race(
@@ -79,25 +80,25 @@ class GetNextRacesUseCaseTest {
             number = 2,
             meetingName = "Meeting 2",
             categoryId = CategoryId.GREYHOUND,
-            advertisedStart = now.plusSeconds(600),
+            advertisedStart = Instant.fromEpochSeconds(1600),
         )
 
         val mockRepository = mockk<RaceRepository> {
-            coEvery { getNextToGoRaces(10) } returns Result.Success(listOf(horseRace, greyhoundRace))
+            every { getNextToGoRacesStream(10) } returns flowOf(Result.Success(listOf(horseRace, greyhoundRace)))
         }
 
         val useCase = GetNextRacesUseCase(mockRepository, mockClock)
-        val result = useCase.execute(count = 10, categories = setOf(CategoryId.HORSE))
+        val result = useCase.executeStream(count = 10, categories = setOf(CategoryId.HORSE)).first()
 
         assertTrue(result is Result.Success)
-        val races = (result as Result.Success).data
+        val races = result.data
         assertEquals(1, races.size)
         assertEquals(CategoryId.HORSE, races[0].categoryId)
     }
 
     @Test
     fun execute_withExpiredRaces_filtersOutOldRaces() = runTest {
-        val now = Instant.parse("2024-01-01T12:00:00Z")
+        val now = Instant.fromEpochSeconds(1000)
         val mockClock = mockk<Clock> {
             every { now() } returns now
         }
@@ -108,7 +109,7 @@ class GetNextRacesUseCaseTest {
             number = 1,
             meetingName = "Meeting 1", 
             categoryId = CategoryId.HORSE,
-            advertisedStart = now.plusSeconds(300), // Future race
+            advertisedStart = Instant.fromEpochSeconds(1300), // Future race
         )
         
         val expiredRace = Race(
@@ -117,18 +118,18 @@ class GetNextRacesUseCaseTest {
             number = 2,
             meetingName = "Meeting 2",
             categoryId = CategoryId.GREYHOUND, 
-            advertisedStart = now.minusSeconds(120), // 2 minutes ago
+            advertisedStart = Instant.fromEpochSeconds(880), // 2 minutes ago
         )
 
         val mockRepository = mockk<RaceRepository> {
-            coEvery { getNextToGoRaces(10) } returns Result.Success(listOf(validRace, expiredRace))
+            every { getNextToGoRacesStream(10) } returns flowOf(Result.Success(listOf(validRace, expiredRace)))
         }
 
         val useCase = GetNextRacesUseCase(mockRepository, mockClock)
-        val result = useCase.execute(count = 10)
+        val result = useCase.executeStream(count = 10).first()
 
         assertTrue(result is Result.Success)
-        val races = (result as Result.Success).data
+        val races = result.data
         assertEquals(1, races.size)
         assertEquals("1", races[0].id) // Only valid race remains
     }
@@ -137,13 +138,13 @@ class GetNextRacesUseCaseTest {
     fun execute_withRepositoryError_returnsError() = runTest {
         val mockClock = mockk<Clock>()
         val mockRepository = mockk<RaceRepository> {
-            coEvery { getNextToGoRaces(10) } returns Result.Error(DataError.NetworkUnavailable)
+            every { getNextToGoRacesStream(10) } returns flowOf(Result.Error(DataError.NetworkUnavailable))
         }
 
         val useCase = GetNextRacesUseCase(mockRepository, mockClock)
-        val result = useCase.execute(count = 10)
+        val result = useCase.executeStream(count = 10).first()
 
         assertTrue(result is Result.Error)
-        assertEquals(DataError.NetworkUnavailable, (result as Result.Error).error)
+        assertEquals(DataError.NetworkUnavailable, result.error)
     }
 }

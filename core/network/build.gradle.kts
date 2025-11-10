@@ -31,6 +31,9 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:domain"))
     
+    // Date and Time
+    implementation(libs.kotlinx.datetime)
+    
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     
     // Network
@@ -45,4 +48,5 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(kotlin("test"))
 }

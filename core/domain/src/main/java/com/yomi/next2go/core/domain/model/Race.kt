@@ -1,6 +1,6 @@
 package com.yomi.next2go.core.domain.model
 
-import java.time.Instant
+import kotlinx.datetime.Instant
 
 data class Race(
     val id: String,

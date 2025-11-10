@@ -30,6 +30,9 @@ android {
 dependencies {
     implementation(project(":core:common"))
     
+    // Date and Time
+    implementation(libs.kotlinx.datetime)
+    
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     
@@ -42,4 +45,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
+    testImplementation(kotlin("test"))
 }

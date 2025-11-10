@@ -7,7 +7,6 @@ import com.yomi.next2go.core.domain.repository.RaceRepository
 import com.yomi.next2go.core.domain.repository.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.Duration
 
 class GetNextRacesUseCase(
     private val repository: RaceRepository,
@@ -42,9 +41,9 @@ class GetNextRacesUseCase(
 
     private fun isRaceValid(race: Race): Boolean {
         val now = clock.now()
-        val timeSinceStart = Duration.between(race.advertisedStart, now)
+        val secondsSinceStart = now.epochSeconds - race.advertisedStart.epochSeconds
         
         // Remove races that started more than 1 minute ago
-        return timeSinceStart.toMinutes() < 1
+        return secondsSinceStart < 60
     }
 }

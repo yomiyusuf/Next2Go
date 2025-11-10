@@ -2,23 +2,20 @@ package com.yomi.next2go.core.domain.mvi
 
 import androidx.lifecycle.viewModelScope
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.domain.model.CategoryColor
-import com.yomi.next2go.core.domain.model.RaceDisplayModel
+import com.yomi.next2go.core.domain.model.Race
 import com.yomi.next2go.core.domain.repository.Result
 import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
-import com.yomi.next2go.core.common.time.Clock
-import com.yomi.next2go.core.domain.model.Race
+import com.yomi.next2go.core.domain.timer.CountdownTimer
+import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import java.time.Instant
-import kotlin.math.abs
 
 class RaceViewModel(
     private val getNextRacesUseCase: GetNextRacesUseCase,
-    private val clock: Clock,
+    private val displayModelMapper: RaceDisplayModelMapper,
+    private val countdownTimer: CountdownTimer,
 ) : BaseMviViewModel<RaceUiState, RaceIntent, RaceSideEffect>(
     initialState = RaceUiState()
 ) {
@@ -28,8 +25,14 @@ class RaceViewModel(
     init {
         // Start observing races on initialization
         handleIntent(RaceIntent.LoadRaces)
+        
         // Start countdown timer
-        startCountdownTimer()
+        countdownTimer.start(::updateCountdowns)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        countdownTimer.stop()
     }
 
     override fun handleIntent(intent: RaceIntent) {
@@ -90,7 +93,7 @@ class RaceViewModel(
             is Result.Success -> {
                 currentRaces = result.data
                 val displayRaces = currentRaces.map { race ->
-                    createDisplayModel(race)
+                    displayModelMapper.mapToDisplayModel(race)
                 }
                 updateState { 
                     it.copy(
@@ -118,61 +121,10 @@ class RaceViewModel(
         }
     }
 
-    private fun startCountdownTimer() {
-        viewModelScope.launch {
-            while (true) {
-                delay(1000) // Update every second
-                updateCountdowns()
-            }
-        }
-    }
-
     private fun updateCountdowns() {
         val displayRaces = currentRaces.map { race ->
-            createDisplayModel(race)
+            displayModelMapper.mapToDisplayModel(race)
         }
         updateState { it.copy(displayRaces = displayRaces) }
-    }
-
-    private fun createDisplayModel(race: Race): RaceDisplayModel {
-        return RaceDisplayModel(
-            id = race.id,
-            raceName = "${race.meetingName} R${race.number}",
-            raceNumber = race.number,
-            runnerName = "Next Runner",
-            runnerNumber = 1,
-            jockeyName = "TBA",
-            bestTime = "--:--",
-            odds = "--",
-            countdownText = formatCountdown(race.advertisedStart),
-            categoryColor = getCategoryColor(race.categoryId),
-            isLive = isRaceLive(race.advertisedStart)
-        )
-    }
-
-    private fun formatCountdown(advertisedStart: Instant): String {
-        val now = clock.now()
-        val diffSeconds = advertisedStart.epochSecond - now.epochSecond
-        
-        return when {
-            diffSeconds <= 0 -> "LIVE"
-            diffSeconds < 60 -> "${diffSeconds}s"
-            diffSeconds < 3600 -> "${diffSeconds / 60}m ${diffSeconds % 60}s"
-            else -> "${diffSeconds / 3600}h ${(diffSeconds % 3600) / 60}m"
-        }
-    }
-
-    private fun isRaceLive(advertisedStart: Instant): Boolean {
-        val now = clock.now()
-        val diffSeconds = advertisedStart.epochSecond - now.epochSecond
-        return diffSeconds <= 0 && abs(diffSeconds) <= 300 // Live for 5 minutes past start
-    }
-
-    private fun getCategoryColor(categoryId: CategoryId): CategoryColor {
-        return when (categoryId) {
-            CategoryId.HORSE -> CategoryColor.GREEN
-            CategoryId.GREYHOUND -> CategoryColor.RED
-            CategoryId.HARNESS -> CategoryColor.YELLOW
-        }
     }
 }

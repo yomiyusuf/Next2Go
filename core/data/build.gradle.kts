@@ -42,4 +42,5 @@ dependencies {
     testImplementation(libs.moshi)
     testImplementation(libs.moshi.kotlin)
     testImplementation(libs.mockk)
+    testImplementation(kotlin("test"))
 }

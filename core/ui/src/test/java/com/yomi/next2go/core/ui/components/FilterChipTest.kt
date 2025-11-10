@@ -10,7 +10,12 @@ import androidx.compose.ui.test.performClick
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33])
 class FilterChipTest {
 
     @get:Rule

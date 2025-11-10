@@ -28,7 +28,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.kotlinx.datetime)
+    
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     
     testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
 }

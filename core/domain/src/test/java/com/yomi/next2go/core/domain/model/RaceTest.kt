@@ -1,8 +1,8 @@
 package com.yomi.next2go.core.domain.model
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import java.time.Instant
+import kotlinx.datetime.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class RaceTest {
     @Test
@@ -12,7 +12,7 @@ class RaceTest {
         val raceNumber = 8
         val meetingName = "Redcliffe"
         val categoryId = CategoryId.HARNESS
-        val advertisedStart = Instant.ofEpochSecond(1762340700)
+        val advertisedStart = Instant.fromEpochSeconds(1762340700)
 
         val race = Race(
             id = raceId,
