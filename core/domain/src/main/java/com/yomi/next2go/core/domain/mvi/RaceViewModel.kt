@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,11 +27,22 @@ class RaceViewModel @Inject constructor(
     private var currentRaces: List<Race> = emptyList()
 
     init {
-        // Start observing races on initialization
         handleIntent(RaceIntent.LoadRaces)
 
         // Start countdown timer
         countdownTimer.start(::updateCountdowns)
+        
+        // Start auto-refresh timer (every 30 seconds)
+        startAutoRefresh()
+    }
+
+    private fun startAutoRefresh() {
+        viewModelScope.launch {
+            while (true) {
+                delay(30_000L) // 30 seconds
+                refreshRaces()
+            }
+        }
     }
 
     override fun onCleared() {
@@ -51,7 +63,7 @@ class RaceViewModel @Inject constructor(
         updateState { it.copy(isLoading = true, error = null) }
 
         getNextRacesUseCase.executeStream(
-            count = 10,
+            count = 5,
             categories = currentState.selectedCategories,
         ).onEach { result ->
             handleRaceResult(result)
@@ -63,7 +75,7 @@ class RaceViewModel @Inject constructor(
             updateState { it.copy(isLoading = true, error = null) }
 
             val result = getNextRacesUseCase.executeStream(
-                count = 10,
+                count = 5,
                 categories = currentState.selectedCategories,
             ).first()
 

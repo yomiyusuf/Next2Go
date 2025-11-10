@@ -5,12 +5,12 @@ kotlin = "2.0.0"
 
 # AndroidX
 coreKtx = "1.13.1"
-lifecycleRuntimeKtx = "2.9.4"
-activityCompose = "1.11.0"
+lifecycleRuntimeKtx = "2.8.2"
+activityCompose = "1.9.0"
 viewmodel = "2.9.4"
 
 # Compose
-composeBom = "2025.11.00"
+composeBom = "2024.08.00"
 
 # Testing
 junit = "4.13.2"
@@ -21,15 +21,15 @@ espressoCore = "3.7.0"
 spotless = "8.0.0"
 
 # Network
-retrofit = "3.0.0"
+retrofit = "2.9.0"
 moshi = "1.15.2"
-okhttp = "5.3.0"
+okhttp = "4.12.0"
 coroutines = "1.10.2"
-datetime = "0.7.1"
+datetime = "0.6.1"
 
 # Testing
 mockk = "1.14.6"
-robolectric = "4.16"
+robolectric = "4.14.1"
 
 # Dependency Injection
 hilt = "2.57.2"
@@ -38,7 +38,7 @@ ksp = "2.0.21-1.0.27"
 javapoet = "1.13.0"
 
 # Flow Testing
-turbine = "1.2.1"
+turbine = "1.2.0"
 
 # Desugaring
 desugar = "2.1.5"
