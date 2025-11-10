@@ -1,30 +1,27 @@
 package com.yomi.next2go.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,24 +31,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import com.yomi.next2go.R
 import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.model.RaceDisplayModel
-import com.yomi.next2go.mvi.RaceIntent
-import com.yomi.next2go.mvi.RaceUiState
 import com.yomi.next2go.core.ui.components.FilterChip
 import com.yomi.next2go.core.ui.components.RaceCard
 import com.yomi.next2go.core.ui.theme.DarkBackground
 import com.yomi.next2go.core.ui.theme.LocalSpacing
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
+import com.yomi.next2go.model.RaceDisplayModel
+import com.yomi.next2go.mvi.RaceIntent
+import com.yomi.next2go.mvi.RaceUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +132,7 @@ fun RaceScreen(
                     RefreshIndicator(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
-                            .padding(top = spacing.small)
+                            .padding(top = spacing.small),
                     )
                 }
             }
@@ -215,7 +212,7 @@ private fun RefreshIndicator(
         modifier = modifier
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
             )
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics {
@@ -257,7 +254,7 @@ private fun RaceList(
     ) {
         items(
             items = displayRaces,
-            key = { displayRace -> displayRace.id }
+            key = { displayRace -> displayRace.id },
         ) { displayRace ->
             val categoryName = stringResource(id = getCategoryStringResource(displayRace.categoryId))
             AnimatedRaceCard(
@@ -285,18 +282,18 @@ private fun AnimatedRaceCard(
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(
-            animationSpec = tween(durationMillis = 300)
+            animationSpec = tween(durationMillis = 300),
         ) + slideInVertically(
             animationSpec = tween(durationMillis = 300),
-            initialOffsetY = { -it / 4 }
+            initialOffsetY = { -it / 4 },
         ),
         exit = fadeOut(
-            animationSpec = tween(durationMillis = 200)
+            animationSpec = tween(durationMillis = 200),
         ) + slideOutVertically(
             animationSpec = tween(durationMillis = 200),
-            targetOffsetY = { it / 4 }
+            targetOffsetY = { it / 4 },
         ),
-        modifier = modifier
+        modifier = modifier,
     ) {
         RaceCard(
             raceName = raceName,

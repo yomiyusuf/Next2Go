@@ -7,11 +7,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
+import com.yomi.next2go.core.ui.theme.Next2GoTheme
 import com.yomi.next2go.model.RaceDisplayModel
 import com.yomi.next2go.mvi.RaceIntent
 import com.yomi.next2go.mvi.RaceUiState
-import com.yomi.next2go.core.ui.theme.Next2GoTheme
-import com.yomi.next2go.ui.screens.RaceScreen
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +49,7 @@ class RaceScreenTest {
                 countdownText = "5m 0s",
                 categoryColor = CategoryColor.RED,
                 isLive = false,
-                contentDescription = ""
+                contentDescription = "",
             ),
         )
 

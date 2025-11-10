@@ -15,7 +15,7 @@ class RaceDisplayModelMapper(
     fun mapToDisplayModel(race: Race): RaceDisplayModel {
         val countdownText = RaceCountdownFormatter.formatCountdown(race.advertisedStart, clock)
         val isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock)
-        
+
         val categoryName = getCategoryName(race.categoryId)
         val contentDescription = buildContentDescription(
             categoryName = categoryName,
@@ -24,7 +24,7 @@ class RaceDisplayModelMapper(
             isLive = isLive,
             countdownText = countdownText,
         )
-        
+
         return RaceDisplayModel(
             id = race.id,
             raceName = race.meetingName,

@@ -6,12 +6,12 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.yomi.next2go.core.common.time.Clock
 import com.yomi.next2go.core.common.time.SystemClock
 import com.yomi.next2go.core.data.repository.RaceRepositoryImpl
-import com.yomi.next2go.mapper.RaceDisplayModelMapper
 import com.yomi.next2go.core.domain.repository.RaceRepository
 import com.yomi.next2go.core.domain.timer.CountdownTimer
 import com.yomi.next2go.core.domain.timer.CountdownTimerImpl
 import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
 import com.yomi.next2go.core.network.api.RacingApiService
+import com.yomi.next2go.mapper.RaceDisplayModelMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

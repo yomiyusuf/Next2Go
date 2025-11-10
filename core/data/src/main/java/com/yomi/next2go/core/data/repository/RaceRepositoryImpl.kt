@@ -24,7 +24,7 @@ class RaceRepositoryImpl(
         return try {
             // Request more races initially to account for time filtering
             val requestCount = (count * 1.5).toInt().coerceAtLeast(count + 5)
-            
+
             val allRaces = when {
                 categories.isEmpty() -> {
                     // No categories selected - get all races
