@@ -13,15 +13,13 @@ class RaceDisplayModelMapper(
     fun mapToDisplayModel(race: Race): RaceDisplayModel {
         return RaceDisplayModel(
             id = race.id,
-            raceName = "${race.meetingName} R${race.number}",
+            raceName = race.meetingName,
             raceNumber = race.number,
             runnerName = "Next Runner",
             runnerNumber = 1,
-            jockeyName = "TBA",
-            bestTime = "--:--",
-            odds = "--",
             countdownText = RaceCountdownFormatter.formatCountdown(race.advertisedStart, clock),
             categoryColor = getCategoryColor(race.categoryId),
+            categoryId = race.categoryId,
             isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock),
         )
     }

@@ -21,27 +21,23 @@ class RaceScreenTest {
 
         val sampleDisplayRaces = listOf(
             RaceDisplayModel(
+                categoryId = CategoryId.HORSE,
                 id = "1",
                 raceName = "BATHURST R8",
                 raceNumber = 8,
                 runnerName = "Next Runner",
                 runnerNumber = 1,
-                jockeyName = "TBA",
-                bestTime = "--:--",
-                odds = "--",
                 countdownText = "3m 0s",
                 categoryColor = CategoryColor.GREEN,
                 isLive = false,
             ),
             RaceDisplayModel(
+                categoryId = CategoryId.HORSE,
                 id = "2",
                 raceName = "CANNINGTON R2",
                 raceNumber = 2,
                 runnerName = "Next Runner",
                 runnerNumber = 1,
-                jockeyName = "TBA",
-                bestTime = "--:--",
-                odds = "--",
                 countdownText = "5m 0s",
                 categoryColor = CategoryColor.RED,
                 isLive = false,
@@ -128,9 +124,6 @@ class RaceScreenTest {
     @Test
     fun raceScreen_displaysLoadingState() {
         composeTestRule.setContent(RaceScreenProvider.loading())
-
-        // Should show loading indicator (we'll implement this)
-        // For now, just verify no races are shown
         composeTestRule
             .onNodeWithText("BATHURST R8")
             .assertDoesNotExist()

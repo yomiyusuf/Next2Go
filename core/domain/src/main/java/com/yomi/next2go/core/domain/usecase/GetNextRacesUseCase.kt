@@ -16,10 +16,14 @@ class GetNextRacesUseCase(
         count: Int = 10,
         categories: Set<CategoryId> = emptySet(),
     ): Flow<Result<List<Race>>> {
-        return repository.getNextToGoRacesStream(count).map { result ->
+        return repository.getNextToGoRacesStream(count, categories).map { result ->
             when (result) {
                 is Result.Success -> {
-                    val filteredRaces = filterAndSortRaces(result.data, categories, count)
+                    val filteredRaces = result.data
+                        .let { races -> filterByTime(races) }
+                        .let { races -> filterByCategories(races, categories) }
+                        .sortedBy { it.advertisedStart.epochSeconds }
+                        .take(count)
                     Result.Success(filteredRaces)
                 }
                 is Result.Error -> result
@@ -27,16 +31,17 @@ class GetNextRacesUseCase(
         }
     }
 
-    private fun filterAndSortRaces(
-        races: List<Race>,
-        categories: Set<CategoryId>,
-        count: Int,
-    ): List<Race> {
-        return races
-            .filter { race -> isRaceValid(race) }
-            .filter { race -> categories.isEmpty() || race.categoryId in categories }
-            .sortedBy { it.advertisedStart }
-            .take(count)
+    private fun filterByTime(races: List<Race>): List<Race> {
+        return races.filter { race -> isRaceValid(race) }
+    }
+
+    private fun filterByCategories(races: List<Race>, categories: Set<CategoryId>): List<Race> {
+        // If no categories are selected, return all races
+        if (categories.isEmpty()) {
+            return races
+        }
+        // Filter races to only include selected categories
+        return races.filter { race -> categories.contains(race.categoryId) }
     }
 
     private fun isRaceValid(race: Race): Boolean {

@@ -33,9 +33,6 @@ import com.yomi.next2go.core.domain.mvi.RaceIntent
 import com.yomi.next2go.core.domain.mvi.RaceUiState
 import com.yomi.next2go.core.ui.components.FilterChip
 import com.yomi.next2go.core.ui.components.RaceCard
-import com.yomi.next2go.core.ui.theme.CategoryGreen
-import com.yomi.next2go.core.ui.theme.CategoryRed
-import com.yomi.next2go.core.ui.theme.CategoryYellow
 import com.yomi.next2go.core.ui.theme.DarkBackground
 import com.yomi.next2go.core.ui.theme.LocalSpacing
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
@@ -199,13 +196,8 @@ private fun RaceList(
             RaceCard(
                 raceName = displayRace.raceName,
                 raceNumber = displayRace.raceNumber,
-                runnerName = displayRace.runnerName,
-                runnerNumber = displayRace.runnerNumber,
-                jockeyName = displayRace.jockeyName,
-                bestTime = displayRace.bestTime,
-                odds = displayRace.odds,
                 countdownText = displayRace.countdownText,
-                categoryColor = getCategoryColor(displayRace.categoryColor),
+                categoryId = displayRace.categoryId,
                 isLive = displayRace.isLive,
             )
         }
@@ -221,28 +213,24 @@ fun RaceScreenPreview() {
                 displayRaces = listOf(
                     RaceDisplayModel(
                         id = "1",
-                        raceName = "BATHURST R8",
+                        raceName = "BATHURST",
                         raceNumber = 8,
                         runnerName = "Next Runner",
                         runnerNumber = 1,
-                        jockeyName = "TBA",
-                        bestTime = "--:--",
-                        odds = "--",
                         countdownText = "3m 0s",
                         categoryColor = CategoryColor.GREEN,
+                        categoryId = CategoryId.HORSE,
                         isLive = false,
                     ),
                     RaceDisplayModel(
                         id = "2",
-                        raceName = "CANNINGTON R2",
+                        raceName = "CANNINGTON",
                         raceNumber = 2,
                         runnerName = "Next Runner",
                         runnerNumber = 1,
-                        jockeyName = "TBA",
-                        bestTime = "--:--",
-                        odds = "--",
                         countdownText = "5m 0s",
                         categoryColor = CategoryColor.RED,
+                        categoryId = CategoryId.GREYHOUND,
                         isLive = false,
                     ),
                 ),
@@ -251,13 +239,5 @@ fun RaceScreenPreview() {
             ),
             onIntent = { },
         )
-    }
-}
-
-private fun getCategoryColor(categoryColor: CategoryColor): Color {
-    return when (categoryColor) {
-        CategoryColor.GREEN -> CategoryGreen
-        CategoryColor.RED -> CategoryRed
-        CategoryColor.YELLOW -> CategoryYellow
     }
 }

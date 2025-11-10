@@ -1,5 +1,6 @@
 package com.yomi.next2go.core.domain.repository
 
+import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.DataError
 import com.yomi.next2go.core.domain.model.Race
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,13 @@ sealed interface Result<out T> {
 }
 
 interface RaceRepository {
-    suspend fun getNextToGoRaces(count: Int = 10): Result<List<Race>>
-    fun getNextToGoRacesStream(count: Int = 10): Flow<Result<List<Race>>>
+    suspend fun getNextToGoRaces(
+        count: Int = 10,
+        categories: Set<CategoryId> = emptySet(),
+    ): Result<List<Race>>
+
+    fun getNextToGoRacesStream(
+        count: Int = 10,
+        categories: Set<CategoryId> = emptySet(),
+    ): Flow<Result<List<Race>>>
 }

@@ -35,6 +35,7 @@ class RaceContractTest {
                 odds = "2.50",
                 countdownText = "5m 30s",
                 categoryColor = CategoryColor.GREEN,
+                categoryId = CategoryId.HORSE,
                 isLive = false,
             ),
         )

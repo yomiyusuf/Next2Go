@@ -9,5 +9,6 @@ interface RacingApiService {
     suspend fun getNextRaces(
         @Query("method") method: String = "nextraces",
         @Query("count") count: Int = 10,
+        @Query("category_id") categoryId: String? = null,
     ): ApiResponse
 }

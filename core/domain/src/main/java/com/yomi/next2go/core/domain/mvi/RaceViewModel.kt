@@ -8,11 +8,9 @@ import com.yomi.next2go.core.domain.repository.Result
 import com.yomi.next2go.core.domain.timer.CountdownTimer
 import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +29,7 @@ class RaceViewModel @Inject constructor(
 
         // Start countdown timer
         countdownTimer.start(::updateCountdowns)
-        
+
         // Start auto-refresh timer (every 30 seconds)
         startAutoRefresh()
     }
@@ -60,14 +58,16 @@ class RaceViewModel @Inject constructor(
     }
 
     private fun loadRaces() {
-        updateState { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            updateState { it.copy(isLoading = true, error = null) }
 
-        getNextRacesUseCase.executeStream(
-            count = 5,
-            categories = currentState.selectedCategories,
-        ).onEach { result ->
+            val result = getNextRacesUseCase.executeStream(
+                count = 5,
+                categories = currentState.selectedCategories,
+            ).first()
+
             handleRaceResult(result)
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun refreshRaces() {

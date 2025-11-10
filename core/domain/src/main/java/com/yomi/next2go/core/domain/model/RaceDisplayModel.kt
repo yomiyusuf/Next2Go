@@ -6,10 +6,9 @@ data class RaceDisplayModel(
     val raceNumber: Int,
     val runnerName: String,
     val runnerNumber: Int,
-    val jockeyName: String,
-    val bestTime: String,
-    val odds: String,
-    val countdownText: String, //Pre-formatted: "2m 33s", "LIVE", etc.
+    // Pre-formatted: "2m 33s", "LIVE", etc.
+    val countdownText: String,
     val categoryColor: CategoryColor,
-    val isLive: Boolean
+    val categoryId: CategoryId,
+    val isLive: Boolean,
 )

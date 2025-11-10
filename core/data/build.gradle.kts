@@ -34,6 +34,9 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     
+    // DateTime
+    implementation(libs.kotlinx.datetime)
+    
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockwebserver)

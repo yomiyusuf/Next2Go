@@ -11,12 +11,12 @@ import com.yomi.next2go.core.network.dto.RacingData
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class RaceRepositoryImplTest {
 
@@ -27,16 +27,17 @@ class RaceRepositoryImplTest {
             raceName = "Test Race",
             raceNumber = 1,
             meetingName = "Test Meeting",
-            categoryId = "4a2788f8-e825-4d36-9894-efd4baf1cfae", // HORSE
-            advertisedStart = AdvertisedStartDto(seconds = 1762340700)
+            // HORSE
+            categoryId = "4a2788f8-e825-4d36-9894-efd4baf1cfae",
+            advertisedStart = AdvertisedStartDto(seconds = 1762340700),
         )
         val apiResponse = ApiResponse(
             status = 200,
             data = RacingData(
                 nextToGoIds = listOf("race-1"),
-                raceSummaries = mapOf("race-1" to raceDto)
+                raceSummaries = mapOf("race-1" to raceDto),
             ),
-            message = "OK"
+            message = "OK",
         )
 
         val mockApiService = mockk<RacingApiService> {
@@ -58,7 +59,7 @@ class RaceRepositoryImplTest {
     fun getNextToGoRaces_withHttpError_returnsError() = runTest {
         val mockApiService = mockk<RacingApiService> {
             coEvery { getNextRaces(any(), any()) } throws HttpException(
-                Response.error<Any>(500, "".toResponseBody())
+                Response.error<Any>(500, "".toResponseBody()),
             )
         }
 
@@ -68,5 +69,4 @@ class RaceRepositoryImplTest {
         assertTrue(result is Result.Error)
         assertEquals(DataError.ServerError, (result as Result.Error).error)
     }
-
 }
