@@ -1,17 +1,25 @@
-package com.yomi.next2go.core.ui.screens
+package com.yomi.next2go.ui.screens
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.domain.model.RaceDisplayModel
-import com.yomi.next2go.core.domain.mvi.RaceUiState
+import com.yomi.next2go.model.RaceDisplayModel
+import com.yomi.next2go.mvi.RaceIntent
+import com.yomi.next2go.mvi.RaceUiState
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
+import com.yomi.next2go.ui.screens.RaceScreen
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [33])
 class RaceScreenTest {
 
     @get:Rule
@@ -30,6 +38,7 @@ class RaceScreenTest {
                 countdownText = "3m 0s",
                 categoryColor = CategoryColor.GREEN,
                 isLive = false,
+                contentDescription = "",
             ),
             RaceDisplayModel(
                 categoryId = CategoryId.HORSE,
@@ -41,6 +50,7 @@ class RaceScreenTest {
                 countdownText = "5m 0s",
                 categoryColor = CategoryColor.RED,
                 isLive = false,
+                contentDescription = ""
             ),
         )
 
@@ -49,8 +59,8 @@ class RaceScreenTest {
                 displayRaces = sampleDisplayRaces,
                 isLoading = false,
             ),
-            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { },
-        ): @androidx.compose.runtime.Composable () -> Unit = {
+            onIntent: (RaceIntent) -> Unit = { },
+        ): @Composable () -> Unit = {
             Next2GoTheme {
                 RaceScreen(
                     uiState = uiState,
@@ -64,7 +74,7 @@ class RaceScreenTest {
         )
 
         fun error(
-            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { },
+            onIntent: (RaceIntent) -> Unit = { },
         ) = default(
             uiState = RaceUiState(
                 error = "Network error occurred",
@@ -87,7 +97,7 @@ class RaceScreenTest {
         composeTestRule.setContent(RaceScreenProvider.default())
 
         composeTestRule
-            .onNodeWithText("NEXT TO GO RACING")
+            .onNodeWithText("Next2Go Racing")
             .assertIsDisplayed()
     }
 
@@ -144,7 +154,7 @@ class RaceScreenTest {
 
     @Test
     fun raceScreen_callsOnIntentWhenCategorySelected() {
-        var capturedIntent: com.yomi.next2go.core.domain.mvi.RaceIntent? = null
+        var capturedIntent: RaceIntent? = null
 
         composeTestRule.setContent(
             RaceScreenProvider.default(onIntent = { capturedIntent = it }),
@@ -154,8 +164,8 @@ class RaceScreenTest {
             .onNodeWithText("Horse Racing")
             .performClick()
 
-        assert(capturedIntent is com.yomi.next2go.core.domain.mvi.RaceIntent.ToggleCategory)
-        assert((capturedIntent as com.yomi.next2go.core.domain.mvi.RaceIntent.ToggleCategory).category == CategoryId.HORSE)
+        assert(capturedIntent is RaceIntent.ToggleCategory)
+        assert((capturedIntent as RaceIntent.ToggleCategory).category == CategoryId.HORSE)
     }
 
     @Test
@@ -171,7 +181,7 @@ class RaceScreenTest {
 
     @Test
     fun raceScreen_callsOnIntentWhenRetryPressed() {
-        var capturedIntent: com.yomi.next2go.core.domain.mvi.RaceIntent? = null
+        var capturedIntent: RaceIntent? = null
 
         composeTestRule.setContent(
             RaceScreenProvider.error(onIntent = { capturedIntent = it }),
@@ -181,6 +191,6 @@ class RaceScreenTest {
             .onNodeWithText("Retry")
             .performClick()
 
-        assert(capturedIntent is com.yomi.next2go.core.domain.mvi.RaceIntent.LoadRaces)
+        assert(capturedIntent is RaceIntent.LoadRaces)
     }
 }

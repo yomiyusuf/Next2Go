@@ -27,13 +27,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.ui.theme.CategoryGreen
-import com.yomi.next2go.core.ui.theme.CategoryRed
-import com.yomi.next2go.core.ui.theme.CategoryYellow
 import com.yomi.next2go.core.ui.theme.LiveBlue
 import com.yomi.next2go.core.ui.theme.LocalSpacing
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
 import com.yomi.next2go.core.ui.theme.Orange500
+import com.yomi.next2go.core.ui.util.toUiColor
 
 @Composable
 fun RaceCard(
@@ -41,12 +39,25 @@ fun RaceCard(
     raceNumber: Int,
     countdownText: String,
     categoryId: CategoryId,
+    categoryName: String,
     isLive: Boolean,
-    contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     val spacing = LocalSpacing.current
-    val categoryInfo = getCategoryInfo(categoryId)
+
+    val categoryEmoji = categoryId.emoji
+    val categoryColor = categoryId.categoryColor.toUiColor()
+    
+    val contentDescription = buildString {
+        append("$categoryName race ")
+        append("number $raceNumber ")
+        append("at $raceName. ")
+        if (isLive) {
+            append("Race is currently live.")
+        } else {
+            append("Starting in $countdownText.")
+        }
+    }
 
     Card(
         modifier = modifier
@@ -72,14 +83,14 @@ fun RaceCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = categoryInfo.emoji,
+                    text = categoryEmoji,
                     style = MaterialTheme.typography.titleLarge,
                 )
 
                 Spacer(modifier = Modifier.width(spacing.small))
 
                 Text(
-                    text = categoryInfo.name,
+                    text = categoryName,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium,
@@ -97,7 +108,7 @@ fun RaceCard(
                 Box(
                     modifier = Modifier
                         .background(
-                            color = categoryInfo.color,
+                            color = categoryColor,
                             shape = RoundedCornerShape(6.dp),
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -140,32 +151,6 @@ fun RaceCard(
     }
 }
 
-private data class CategoryInfo(
-    val name: String,
-    val emoji: String,
-    val color: Color,
-)
-
-@Composable
-private fun getCategoryInfo(categoryId: CategoryId): CategoryInfo {
-    return when (categoryId) {
-        CategoryId.HORSE -> CategoryInfo(
-            name = "Horse Racing",
-            emoji = "\uD83C\uDFC7",
-            color = CategoryGreen,
-        )
-        CategoryId.GREYHOUND -> CategoryInfo(
-            name = "Greyhound Racing",
-            emoji = "\uD83E\uDDAE",
-            color = CategoryRed,
-        )
-        CategoryId.HARNESS -> CategoryInfo(
-            name = "Harness Racing",
-            emoji = "\uD83D\uDE83",
-            color = CategoryYellow,
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -177,8 +162,8 @@ fun RaceCardPreview() {
                 raceNumber = 8,
                 countdownText = "2m 33s",
                 categoryId = CategoryId.HORSE,
+                categoryName = "Horse Racing",
                 isLive = false,
-                contentDescription = "Horse Racing race number 8 at BATHURST. Starting in 2m 33s.",
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -188,8 +173,8 @@ fun RaceCardPreview() {
                 raceNumber = 1,
                 countdownText = "LIVE",
                 categoryId = CategoryId.GREYHOUND,
+                categoryName = "Greyhound Racing",
                 isLive = true,
-                contentDescription = "Greyhound Racing race number 1 at KILKENNY. Race is currently live.",
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -199,9 +184,10 @@ fun RaceCardPreview() {
                 raceNumber = 5,
                 countdownText = "1m 15s",
                 categoryId = CategoryId.HARNESS,
+                categoryName = "Harness Racing",
                 isLive = false,
-                contentDescription = "Harness Racing race number 5 at ALBION PARK. Starting in 1m 15s.",
             )
         }
     }
 }
+

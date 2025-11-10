@@ -11,8 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yomi.next2go.core.domain.mvi.RaceViewModel
-import com.yomi.next2go.core.ui.screens.RaceScreen
+import com.yomi.next2go.ui.screens.RaceScreen
+import com.yomi.next2go.viewmodel.RaceViewModel
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -1,12 +1,16 @@
-package com.yomi.next2go.core.domain.mvi
+package com.yomi.next2go.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
 import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.Race
+import com.yomi.next2go.core.domain.mvi.BaseMviViewModel
+import com.yomi.next2go.mvi.RaceIntent
+import com.yomi.next2go.mvi.RaceSideEffect
+import com.yomi.next2go.mvi.RaceUiState
 import com.yomi.next2go.core.domain.repository.Result
 import com.yomi.next2go.core.domain.timer.CountdownTimer
 import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
+import com.yomi.next2go.mapper.RaceDisplayModelMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first

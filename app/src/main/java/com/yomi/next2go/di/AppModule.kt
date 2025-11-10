@@ -1,11 +1,12 @@
 package com.yomi.next2go.di
 
+import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.yomi.next2go.core.common.time.Clock
 import com.yomi.next2go.core.common.time.SystemClock
 import com.yomi.next2go.core.data.repository.RaceRepositoryImpl
-import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
+import com.yomi.next2go.mapper.RaceDisplayModelMapper
 import com.yomi.next2go.core.domain.repository.RaceRepository
 import com.yomi.next2go.core.domain.timer.CountdownTimer
 import com.yomi.next2go.core.domain.timer.CountdownTimerImpl
@@ -14,6 +15,7 @@ import com.yomi.next2go.core.network.api.RacingApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -64,7 +66,8 @@ object AppModule {
     @Singleton
     fun provideRaceDisplayModelMapper(
         clock: Clock,
-    ): RaceDisplayModelMapper = RaceDisplayModelMapper(clock)
+        @ApplicationContext context: Context,
+    ): RaceDisplayModelMapper = RaceDisplayModelMapper(clock, context)
 
     @Provides
     @Singleton

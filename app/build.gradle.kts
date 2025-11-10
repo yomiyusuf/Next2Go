@@ -66,6 +66,7 @@ dependencies {
     implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -97,6 +98,12 @@ dependencies {
     
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
+    testImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.robolectric)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

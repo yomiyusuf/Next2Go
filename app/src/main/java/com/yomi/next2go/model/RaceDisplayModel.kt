@@ -1,4 +1,7 @@
-package com.yomi.next2go.core.domain.model
+package com.yomi.next2go.model
+
+import com.yomi.next2go.core.domain.model.CategoryColor
+import com.yomi.next2go.core.domain.model.CategoryId
 
 data class RaceDisplayModel(
     val id: String,

@@ -1,4 +1,4 @@
-package com.yomi.next2go.core.ui.screens
+package com.yomi.next2go.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,11 +40,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.yomi.next2go.R
 import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
-import com.yomi.next2go.core.domain.model.RaceDisplayModel
-import com.yomi.next2go.core.domain.mvi.RaceIntent
-import com.yomi.next2go.core.domain.mvi.RaceUiState
+import com.yomi.next2go.model.RaceDisplayModel
+import com.yomi.next2go.mvi.RaceIntent
+import com.yomi.next2go.mvi.RaceUiState
 import com.yomi.next2go.core.ui.components.FilterChip
 import com.yomi.next2go.core.ui.components.RaceCard
 import com.yomi.next2go.core.ui.theme.DarkBackground
@@ -72,7 +74,7 @@ fun RaceScreen(
             contentAlignment = Alignment.CenterStart,
         ) {
             Text(
-                text = "NEXT TO GO RACING",
+                text = "Next2Go Racing",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -91,14 +93,11 @@ fun RaceScreen(
                 contentPadding = PaddingValues(horizontal = 0.dp),
             ) {
                 items(
-                    listOf(
-                        CategoryId.HORSE to "Horse Racing",
-                        CategoryId.GREYHOUND to "Greyhound Racing",
-                        CategoryId.HARNESS to "Harness Racing",
-                    ),
-                ) { (categoryId, text) ->
+                    listOf(CategoryId.HORSE, CategoryId.GREYHOUND, CategoryId.HARNESS),
+                ) { categoryId ->
+                    val categoryName = stringResource(id = getCategoryStringResource(categoryId))
                     FilterChip(
-                        text = text,
+                        text = categoryName,
                         isSelected = uiState.selectedCategories.contains(categoryId),
                         onClick = { onIntent(RaceIntent.ToggleCategory(categoryId)) },
                     )
@@ -260,13 +259,14 @@ private fun RaceList(
             items = displayRaces,
             key = { displayRace -> displayRace.id }
         ) { displayRace ->
+            val categoryName = stringResource(id = getCategoryStringResource(displayRace.categoryId))
             AnimatedRaceCard(
                 raceName = displayRace.raceName,
                 raceNumber = displayRace.raceNumber,
                 countdownText = displayRace.countdownText,
                 categoryId = displayRace.categoryId,
+                categoryName = categoryName,
                 isLive = displayRace.isLive,
-                contentDescription = displayRace.contentDescription,
             )
         }
     }
@@ -278,8 +278,8 @@ private fun AnimatedRaceCard(
     raceNumber: Int,
     countdownText: String,
     categoryId: CategoryId,
+    categoryName: String,
     isLive: Boolean,
-    contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
@@ -303,8 +303,8 @@ private fun AnimatedRaceCard(
             raceNumber = raceNumber,
             countdownText = countdownText,
             categoryId = categoryId,
+            categoryName = categoryName,
             isLive = isLive,
-            contentDescription = contentDescription,
         )
     }
 }
@@ -346,5 +346,13 @@ fun RaceScreenPreview() {
             ),
             onIntent = { },
         )
+    }
+}
+
+private fun getCategoryStringResource(categoryId: CategoryId): Int {
+    return when (categoryId) {
+        CategoryId.HORSE -> R.string.category_horse_racing
+        CategoryId.GREYHOUND -> R.string.category_greyhound_racing
+        CategoryId.HARNESS -> R.string.category_harness_racing
     }
 }

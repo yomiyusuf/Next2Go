@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Next2Go</string>
+    
+    <!-- Race Category Names -->
+    <string name="category_horse_racing">Horse Racing</string>
+    <string name="category_greyhound_racing">Greyhound Racing</string>
+    <string name="category_harness_racing">Harness Racing</string>
 </resources>
