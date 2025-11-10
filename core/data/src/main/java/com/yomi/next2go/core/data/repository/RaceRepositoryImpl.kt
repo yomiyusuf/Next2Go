@@ -10,7 +10,6 @@ import com.yomi.next2go.core.network.mapper.toDomain
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -60,8 +59,9 @@ class RaceRepositoryImpl(
                             }
                         }.awaitAll()
 
-                        // Merge all race lists and sort by advertised start time
+                        // Merge all race lists, deduplicate by ID, and sort by advertised start time
                         raceLists.flatten()
+                            .distinctBy { it.id }
                             .sortedBy { it.advertisedStart.epochSeconds }
                     }
                 }
