@@ -1,7 +1,7 @@
 package com.yomi.next2go.core.common.time
 
-import kotlinx.datetime.Clock as KotlinClock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.Clock as KotlinClock
 
 interface Clock {
     fun now(): Instant

@@ -5,11 +5,11 @@ import kotlinx.datetime.Instant
 import kotlin.math.abs
 
 object RaceCountdownFormatter {
-    
+
     fun formatCountdown(advertisedStart: Instant, clock: Clock): String {
         val now = clock.now()
         val diffSeconds = advertisedStart.epochSeconds - now.epochSeconds
-        
+
         return when {
             diffSeconds <= 0 -> "LIVE"
             diffSeconds < 60 -> "${diffSeconds}s"

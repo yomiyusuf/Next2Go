@@ -46,7 +46,7 @@ private val LightColorScheme = lightColorScheme(
 fun Next2GoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -68,12 +68,12 @@ fun Next2GoTheme(
 
     CompositionLocalProvider(
         LocalSpacing provides Spacing(),
-        LocalDimensions provides Dimensions()
+        LocalDimensions provides Dimensions(),
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
-            content = content
+            content = content,
         )
     }
 }

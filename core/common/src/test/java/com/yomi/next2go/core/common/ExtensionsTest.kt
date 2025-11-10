@@ -1,11 +1,11 @@
 package com.yomi.next2go.core.common
 
 import com.yomi.next2go.core.common.time.Clock
+import kotlinx.datetime.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlinx.datetime.Instant
 
 class ExtensionsTest {
 

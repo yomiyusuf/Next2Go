@@ -25,25 +25,25 @@ class FilterChipTest {
         fun default(
             text: String = "Horse Racing",
             isSelected: Boolean = false,
-            onClick: () -> Unit = { }
+            onClick: () -> Unit = { },
         ): @androidx.compose.runtime.Composable () -> Unit = {
             Next2GoTheme {
                 FilterChip(
                     text = text,
                     isSelected = isSelected,
-                    onClick = onClick
+                    onClick = onClick,
                 )
             }
         }
 
         fun selected(text: String = "Horse Racing") = default(
             text = text,
-            isSelected = true
+            isSelected = true,
         )
 
         fun unselected(text: String = "Horse Racing") = default(
             text = text,
-            isSelected = false
+            isSelected = false,
         )
     }
 
@@ -86,9 +86,9 @@ class FilterChipTest {
     @Test
     fun filterChip_callsOnClickWhenTapped() {
         var clicked = false
-        
+
         composeTestRule.setContent(
-            FilterChipProvider.default(onClick = { clicked = true })
+            FilterChipProvider.default(onClick = { clicked = true }),
         )
 
         composeTestRule
@@ -101,7 +101,7 @@ class FilterChipTest {
     @Test
     fun filterChip_displaysCustomText() {
         composeTestRule.setContent(
-            FilterChipProvider.default(text = "Greyhound Racing")
+            FilterChipProvider.default(text = "Greyhound Racing"),
         )
 
         composeTestRule

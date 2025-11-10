@@ -1,14 +1,14 @@
 package com.yomi.next2go.core.domain.mapper
 
 import com.yomi.next2go.core.common.time.Clock
-import com.yomi.next2go.core.domain.model.CategoryId
+import com.yomi.next2go.core.domain.formatter.RaceCountdownFormatter
 import com.yomi.next2go.core.domain.model.CategoryColor
+import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.Race
 import com.yomi.next2go.core.domain.model.RaceDisplayModel
-import com.yomi.next2go.core.domain.formatter.RaceCountdownFormatter
 
 class RaceDisplayModelMapper(
-    private val clock: Clock
+    private val clock: Clock,
 ) {
     fun mapToDisplayModel(race: Race): RaceDisplayModel {
         return RaceDisplayModel(
@@ -22,7 +22,7 @@ class RaceDisplayModelMapper(
             odds = "--",
             countdownText = RaceCountdownFormatter.formatCountdown(race.advertisedStart, clock),
             categoryColor = getCategoryColor(race.categoryId),
-            isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock)
+            isLive = RaceCountdownFormatter.isRaceLive(race.advertisedStart, clock),
         )
     }
 

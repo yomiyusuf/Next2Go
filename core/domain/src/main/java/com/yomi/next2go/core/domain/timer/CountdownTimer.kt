@@ -14,7 +14,7 @@ interface CountdownTimer {
 
 class CountdownTimerImpl(
     private val scope: CoroutineScope,
-    private val intervalMs: Long = 1000L
+    private val intervalMs: Long = 1000L,
 ) : CountdownTimer {
     private var timerJob: Job? = null
 

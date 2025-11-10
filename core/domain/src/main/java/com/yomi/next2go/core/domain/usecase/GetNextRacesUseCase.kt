@@ -30,7 +30,7 @@ class GetNextRacesUseCase(
     private fun filterAndSortRaces(
         races: List<Race>,
         categories: Set<CategoryId>,
-        count: Int
+        count: Int,
     ): List<Race> {
         return races
             .filter { race -> isRaceValid(race) }
@@ -42,7 +42,7 @@ class GetNextRacesUseCase(
     private fun isRaceValid(race: Race): Boolean {
         val now = clock.now()
         val secondsSinceStart = now.epochSeconds - race.advertisedStart.epochSeconds
-        
+
         // Remove races that started more than 1 minute ago
         return secondsSinceStart < 60
     }

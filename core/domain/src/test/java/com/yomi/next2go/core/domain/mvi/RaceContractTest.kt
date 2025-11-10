@@ -14,7 +14,7 @@ class RaceContractTest {
     @Test
     fun raceUiState_defaultValues_areCorrect() {
         val state = RaceUiState()
-        
+
         assertFalse(state.isLoading)
         assertTrue(state.displayRaces.isEmpty())
         assertTrue(state.selectedCategories.isEmpty())
@@ -35,18 +35,18 @@ class RaceContractTest {
                 odds = "2.50",
                 countdownText = "5m 30s",
                 categoryColor = CategoryColor.GREEN,
-                isLive = false
-            )
+                isLive = false,
+            ),
         )
         val selectedCategories = setOf(CategoryId.HORSE, CategoryId.GREYHOUND)
-        
+
         val state = RaceUiState(
             isLoading = true,
             displayRaces = displayRaces,
             selectedCategories = selectedCategories,
-            error = "Test error"
+            error = "Test error",
         )
-        
+
         assertTrue(state.isLoading)
         assertEquals(1, state.displayRaces.size)
         assertEquals("Test Race", state.displayRaces.first().raceName)
@@ -62,11 +62,11 @@ class RaceContractTest {
             isLoading = false,
             displayRaces = emptyList(),
             selectedCategories = setOf(CategoryId.HORSE),
-            error = null
+            error = null,
         )
-        
+
         val copiedState = originalState.copy(isLoading = true)
-        
+
         assertTrue(copiedState.isLoading) // Changed
         assertTrue(copiedState.displayRaces.isEmpty()) // Preserved
         assertTrue(copiedState.selectedCategories.contains(CategoryId.HORSE)) // Preserved
@@ -76,7 +76,7 @@ class RaceContractTest {
     @Test
     fun raceIntent_toggleCategory_hasCorrectCategory() {
         val intent = RaceIntent.ToggleCategory(CategoryId.HARNESS)
-        
+
         assertTrue(intent is RaceIntent.ToggleCategory)
         assertEquals(CategoryId.HARNESS, (intent as RaceIntent.ToggleCategory).category)
     }
@@ -85,7 +85,7 @@ class RaceContractTest {
     fun raceSideEffect_showError_hasCorrectMessage() {
         val message = "Network error occurred"
         val sideEffect = RaceSideEffect.ShowError(message)
-        
+
         assertTrue(sideEffect is RaceSideEffect.ShowError)
         assertEquals(message, (sideEffect as RaceSideEffect.ShowError).message)
     }

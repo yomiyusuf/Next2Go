@@ -39,19 +39,19 @@ fun FilterChip(
 ) {
     val spacing = LocalSpacing.current
     val dimensions = LocalDimensions.current
-    
+
     val backgroundColor = if (isSelected) {
         MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.surface
     }
-    
+
     val textColor = if (isSelected) {
         MaterialTheme.colorScheme.onPrimary
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    
+
     val borderColor = if (isSelected) {
         Color.Transparent
     } else {
@@ -66,30 +66,30 @@ fun FilterChip(
             .border(
                 width = if (isSelected) 0.dp else 1.dp,
                 color = borderColor,
-                shape = RoundedCornerShape(dimensions.filterChipCornerRadius)
+                shape = RoundedCornerShape(dimensions.filterChipCornerRadius),
             )
             .clickable(role = Role.Checkbox) { onClick() }
             .semantics { selected = isSelected }
             .padding(horizontal = spacing.large),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = textColor,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(spacing.small))
             }
-            
+
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
-                color = textColor
+                color = textColor,
             )
         }
     }
@@ -103,13 +103,13 @@ fun FilterChipPreview() {
             FilterChip(
                 text = "Horse Racing",
                 isSelected = false,
-                onClick = { }
+                onClick = { },
             )
             Spacer(modifier = Modifier.width(8.dp))
             FilterChip(
                 text = "Greyhound",
                 isSelected = true,
-                onClick = { }
+                onClick = { },
             )
         }
     }

@@ -20,11 +20,11 @@ class RacingApiServiceTest {
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
-        
+
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
-            
+
         apiService = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
             .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -61,11 +61,11 @@ class RacingApiServiceTest {
                 "message": "Success"
             }
         """.trimIndent()
-        
+
         mockWebServer.enqueue(
             MockResponse()
                 .setResponseCode(200)
-                .setBody(mockResponse)
+                .setBody(mockResponse),
         )
 
         // When
@@ -77,7 +77,7 @@ class RacingApiServiceTest {
         assertEquals(2, result.data.nextToGoIds.size)
         assertEquals("race-1", result.data.nextToGoIds[0])
         assertEquals("race-2", result.data.nextToGoIds[1])
-        
+
         val race = result.data.raceSummaries["race-1"]!!
         assertEquals("race-1", race.raceId)
         assertEquals("Test Race", race.raceName)
@@ -93,7 +93,7 @@ class RacingApiServiceTest {
         mockWebServer.enqueue(
             MockResponse()
                 .setResponseCode(200)
-                .setBody("""{"status": 200, "data": {"next_to_go_ids": [], "race_summaries": {}}, "message": "Success"}""")
+                .setBody("""{"status": 200, "data": {"next_to_go_ids": [], "race_summaries": {}}, "message": "Success"}"""),
         )
 
         // When

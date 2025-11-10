@@ -43,22 +43,22 @@ class RaceCardTest {
                     odds = odds,
                     countdownText = countdownText,
                     categoryColor = categoryColor,
-                    isLive = isLive
+                    isLive = isLive,
                 )
             }
         }
 
         fun live() = default(
             countdownText = "LIVE",
-            isLive = true
+            isLive = true,
         )
 
         fun withCustomData(
             runnerName: String,
-            odds: String
+            odds: String,
         ) = default(
             runnerName = runnerName,
-            odds = odds
+            odds = odds,
         )
     }
 
@@ -78,11 +78,11 @@ class RaceCardTest {
         composeTestRule
             .onNodeWithText("6. Snipers Fire (Fr8)")
             .assertIsDisplayed()
-        
+
         composeTestRule
             .onNodeWithText("D: Brad Hewitt")
             .assertIsDisplayed()
-        
+
         composeTestRule
             .onNodeWithText("Best Time: 16.11")
             .assertIsDisplayed()
@@ -129,14 +129,14 @@ class RaceCardTest {
         composeTestRule.setContent(
             RaceCardProvider.withCustomData(
                 runnerName = "Thunder Bolt",
-                odds = "3.50"
-            )
+                odds = "3.50",
+            ),
         )
 
         composeTestRule
             .onNodeWithText("6. Thunder Bolt (Fr8)")
             .assertIsDisplayed()
-            
+
         composeTestRule
             .onNodeWithText("3.50")
             .assertIsDisplayed()

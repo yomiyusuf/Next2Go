@@ -63,19 +63,19 @@ fun RaceCard(
         elevation = CardDefaults.cardElevation(defaultElevation = dimensions.raceCardElevation),
         shape = RoundedCornerShape(dimensions.raceCardCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(spacing.large)
+                .padding(spacing.large),
         ) {
             // Header row with race name and countdown
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Category indicator
@@ -84,48 +84,48 @@ fun RaceCard(
                             .size(dimensions.categoryIndicatorSize)
                             .clip(CircleShape)
                             .background(categoryColor)
-                            .semantics { contentDescription = "Racing category indicator" }
+                            .semantics { contentDescription = "Racing category indicator" },
                     )
-                    
+
                     Spacer(modifier = Modifier.width(spacing.small))
-                    
+
                     Text(
                         text = raceName,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
-                
+
                 // Countdown or LIVE indicator
                 Text(
                     text = countdownText,
                     style = MaterialTheme.typography.labelLarge.copy(
                         color = if (isLive) LiveBlue else Orange500,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
+                        fontSize = 14.sp,
+                    ),
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(spacing.medium))
-            
+
             // Runner info section
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Top,
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(spacing.small)
+                    verticalArrangement = Arrangement.spacedBy(spacing.small),
                 ) {
                     Text(
                         text = "NO. / RUNNER",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            color = TextSecondary
-                        )
+                            color = TextSecondary,
+                        ),
                     )
-                    
+
                     // Race number circle and runner info
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
@@ -133,41 +133,41 @@ fun RaceCard(
                                 .size(dimensions.raceNumberSize)
                                 .clip(CircleShape)
                                 .background(categoryColor),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = runnerNumber.toString(),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     color = Color.White,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                    fontWeight = FontWeight.Bold,
+                                ),
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.width(spacing.small))
-                        
+
                         Text(
                             text = "$runnerNumber. $runnerName (Fr$raceNumber)",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         )
                     }
-                    
+
                     Text(
                         text = "D: $jockeyName",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = TextSecondary
-                        )
+                            color = TextSecondary,
+                        ),
                     )
-                    
+
                     Text(
                         text = "Best Time: $bestTime",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = TextSecondary
-                        )
+                            color = TextSecondary,
+                        ),
                     )
                 }
-                
+
                 // Odds button - aligned to center-top of runner section
                 Box(
                     modifier = Modifier
@@ -178,16 +178,16 @@ fun RaceCard(
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(dimensions.oddsButtonCornerRadius)
+                            shape = RoundedCornerShape(dimensions.oddsButtonCornerRadius),
                         ),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = odds,
                         style = MaterialTheme.typography.labelLarge.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         ),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -210,11 +210,11 @@ fun RaceCardPreview() {
                 odds = "1.35",
                 countdownText = "2m 33s",
                 categoryColor = CategoryGreen,
-                isLive = false
+                isLive = false,
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             RaceCard(
                 raceName = "KILKENNY R1",
                 raceNumber = 1,
@@ -225,7 +225,7 @@ fun RaceCardPreview() {
                 odds = "4.00",
                 countdownText = "LIVE",
                 categoryColor = CategoryGreen,
-                isLive = true
+                isLive = true,
             )
         }
     }

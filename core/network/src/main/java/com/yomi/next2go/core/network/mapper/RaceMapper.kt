@@ -7,7 +7,7 @@ import kotlinx.datetime.Instant
 
 fun RaceDto.toDomain(): Race? {
     val categoryId = CategoryId.fromId(this.categoryId) ?: return null
-    
+
     return Race(
         id = this.raceId,
         name = this.raceName,

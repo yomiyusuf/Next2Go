@@ -7,7 +7,7 @@ import kotlin.math.abs
 fun Instant.toCountdownString(clock: Clock): String {
     val now = clock.now()
     val diffSeconds = this.epochSeconds - now.epochSeconds
-    
+
     return when {
         diffSeconds < 0 -> {
             val secondsPast = abs(diffSeconds)

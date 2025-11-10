@@ -21,22 +21,22 @@ data class Dimensions(
     val raceCardMinHeight: Dp = 120.dp,
     val raceCardElevation: Dp = 2.dp,
     val raceCardCornerRadius: Dp = 8.dp,
-    
+
     // Filter chip dimensions
     val filterChipHeight: Dp = 40.dp,
     val filterChipCornerRadius: Dp = 20.dp,
-    
+
     // Category indicator
     val categoryIndicatorSize: Dp = 16.dp,
-    
+
     // Race number circle
     val raceNumberSize: Dp = 24.dp,
-    
+
     // Odds button
     val oddsButtonWidth: Dp = 64.dp,
     val oddsButtonHeight: Dp = 32.dp,
     val oddsButtonCornerRadius: Dp = 4.dp,
-    
+
     // Countdown timer
     val countdownMinWidth: Dp = 48.dp,
 )
