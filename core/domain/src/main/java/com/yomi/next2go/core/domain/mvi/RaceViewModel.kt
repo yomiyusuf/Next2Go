@@ -72,7 +72,7 @@ class RaceViewModel @Inject constructor(
 
     private fun refreshRaces() {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isRefreshing = true, error = null) }
 
             val result = getNextRacesUseCase.executeStream(
                 count = 5,
@@ -113,6 +113,7 @@ class RaceViewModel @Inject constructor(
                 updateState {
                     it.copy(
                         isLoading = false,
+                        isRefreshing = false,
                         displayRaces = displayRaces,
                         error = null,
                     )
@@ -122,6 +123,7 @@ class RaceViewModel @Inject constructor(
                 updateState {
                     it.copy(
                         isLoading = false,
+                        isRefreshing = false,
                         error = result.error.message ?: "Unknown error occurred",
                     )
                 }

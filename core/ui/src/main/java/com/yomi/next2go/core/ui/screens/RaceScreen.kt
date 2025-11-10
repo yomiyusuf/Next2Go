@@ -4,13 +4,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -94,24 +106,35 @@ fun RaceScreen(
             Spacer(modifier = Modifier.height(spacing.large))
 
             // Content Area
-            when {
-                uiState.isLoading -> {
-                    LoadingState(modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    uiState.isLoading && uiState.displayRaces.isEmpty() -> {
+                        LoadingState(modifier = Modifier.fillMaxSize())
+                    }
+                    uiState.error != null && uiState.displayRaces.isEmpty() -> {
+                        ErrorState(
+                            error = uiState.error ?: "Unknown error",
+                            onRetry = { onIntent(RaceIntent.LoadRaces) },
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                    uiState.displayRaces.isEmpty() -> {
+                        EmptyState(modifier = Modifier.fillMaxSize())
+                    }
+                    else -> {
+                        RaceList(
+                            displayRaces = uiState.displayRaces,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                 }
-                uiState.error != null -> {
-                    ErrorState(
-                        error = uiState.error ?: "Unknown error",
-                        onRetry = { onIntent(RaceIntent.LoadRaces) },
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-                uiState.displayRaces.isEmpty() -> {
-                    EmptyState(modifier = Modifier.fillMaxSize())
-                }
-                else -> {
-                    RaceList(
-                        displayRaces = uiState.displayRaces,
-                        modifier = Modifier.fillMaxSize(),
+
+                // Subtle refresh indicator overlay
+                if (uiState.isRefreshing && uiState.displayRaces.isNotEmpty()) {
+                    RefreshIndicator(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = spacing.small)
                     )
                 }
             }
@@ -181,6 +204,37 @@ private fun EmptyState(
 }
 
 @Composable
+private fun RefreshIndicator(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(16.dp),
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = "Refreshing...",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+@Composable
 private fun RaceList(
     displayRaces: List<RaceDisplayModel>,
     modifier: Modifier = Modifier,
@@ -192,8 +246,11 @@ private fun RaceList(
         contentPadding = PaddingValues(bottom = spacing.large),
         verticalArrangement = Arrangement.spacedBy(spacing.medium),
     ) {
-        items(displayRaces) { displayRace ->
-            RaceCard(
+        items(
+            items = displayRaces,
+            key = { displayRace -> displayRace.id }
+        ) { displayRace ->
+            AnimatedRaceCard(
                 raceName = displayRace.raceName,
                 raceNumber = displayRace.raceNumber,
                 countdownText = displayRace.countdownText,
@@ -201,6 +258,41 @@ private fun RaceList(
                 isLive = displayRace.isLive,
             )
         }
+    }
+}
+
+@Composable
+private fun AnimatedRaceCard(
+    raceName: String,
+    raceNumber: Int,
+    countdownText: String,
+    categoryId: CategoryId,
+    isLive: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn(
+            animationSpec = tween(durationMillis = 300)
+        ) + slideInVertically(
+            animationSpec = tween(durationMillis = 300),
+            initialOffsetY = { -it / 4 }
+        ),
+        exit = fadeOut(
+            animationSpec = tween(durationMillis = 200)
+        ) + slideOutVertically(
+            animationSpec = tween(durationMillis = 200),
+            targetOffsetY = { it / 4 }
+        ),
+        modifier = modifier
+    ) {
+        RaceCard(
+            raceName = raceName,
+            raceNumber = raceNumber,
+            countdownText = countdownText,
+            categoryId = categoryId,
+            isLive = isLive,
+        )
     }
 }
 
