@@ -6,6 +6,7 @@ import com.yomi.next2go.core.domain.repository.Result
 import com.yomi.next2go.core.network.api.RacingApiService
 import com.yomi.next2go.core.network.error.toDataError
 import com.yomi.next2go.core.network.mapper.toDomain
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -27,6 +28,9 @@ class RaceRepositoryImpl(
     }
 
     override fun getNextToGoRacesStream(count: Int): Flow<Result<List<Race>>> = flow {
-        emit(getNextToGoRaces(count))
+        while (true) {
+            emit(getNextToGoRaces(count))
+            delay(30_000) // Refresh race data every 30 seconds
+        }
     }
 }

@@ -1,23 +1,26 @@
 package com.yomi.next2go.core.domain.mvi
 
 import androidx.lifecycle.viewModelScope
+import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
 import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.Race
 import com.yomi.next2go.core.domain.repository.Result
-import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
 import com.yomi.next2go.core.domain.timer.CountdownTimer
-import com.yomi.next2go.core.domain.mapper.RaceDisplayModelMapper
+import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RaceViewModel(
+@HiltViewModel
+class RaceViewModel @Inject constructor(
     private val getNextRacesUseCase: GetNextRacesUseCase,
     private val displayModelMapper: RaceDisplayModelMapper,
     private val countdownTimer: CountdownTimer,
 ) : BaseMviViewModel<RaceUiState, RaceIntent, RaceSideEffect>(
-    initialState = RaceUiState()
+    initialState = RaceUiState(),
 ) {
 
     private var currentRaces: List<Race> = emptyList()
@@ -25,7 +28,7 @@ class RaceViewModel(
     init {
         // Start observing races on initialization
         handleIntent(RaceIntent.LoadRaces)
-        
+
         // Start countdown timer
         countdownTimer.start(::updateCountdowns)
     }
@@ -46,10 +49,10 @@ class RaceViewModel(
 
     private fun loadRaces() {
         updateState { it.copy(isLoading = true, error = null) }
-        
+
         getNextRacesUseCase.executeStream(
             count = 10,
-            categories = currentState.selectedCategories
+            categories = currentState.selectedCategories,
         ).onEach { result ->
             handleRaceResult(result)
         }.launchIn(viewModelScope)
@@ -58,12 +61,12 @@ class RaceViewModel(
     private fun refreshRaces() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
-            
+
             val result = getNextRacesUseCase.executeStream(
                 count = 10,
-                categories = currentState.selectedCategories
+                categories = currentState.selectedCategories,
             ).first()
-            
+
             handleRaceResult(result)
             emitSideEffect(RaceSideEffect.ShowRefreshComplete)
         }
@@ -76,9 +79,9 @@ class RaceViewModel(
         } else {
             currentCategories + category
         }
-        
+
         updateState { it.copy(selectedCategories = newCategories) }
-        
+
         // Reload races with new filter
         loadRaces()
     }
@@ -95,26 +98,26 @@ class RaceViewModel(
                 val displayRaces = currentRaces.map { race ->
                     displayModelMapper.mapToDisplayModel(race)
                 }
-                updateState { 
+                updateState {
                     it.copy(
                         isLoading = false,
                         displayRaces = displayRaces,
-                        error = null
+                        error = null,
                     )
                 }
             }
             is Result.Error -> {
-                updateState { 
+                updateState {
                     it.copy(
                         isLoading = false,
-                        error = result.error.message ?: "Unknown error occurred"
+                        error = result.error.message ?: "Unknown error occurred",
                     )
                 }
                 viewModelScope.launch {
                     emitSideEffect(
                         RaceSideEffect.ShowError(
-                            result.error.message ?: "Failed to load races"
-                        )
+                            result.error.message ?: "Failed to load races",
+                        ),
                     )
                 }
             }

@@ -7,40 +7,33 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.yomi.next2go.ui.theme.Next2GoTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.yomi.next2go.core.domain.mvi.RaceViewModel
+import com.yomi.next2go.core.ui.screens.RaceScreen
+import com.yomi.next2go.core.ui.theme.Next2GoTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Next2GoTheme {
+                val viewModel: RaceViewModel = hiltViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NextToGoApp(
+                    RaceScreen(
+                        uiState = uiState,
+                        onIntent = viewModel::handleIntent,
                         modifier = Modifier.padding(innerPadding),
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun NextToGoApp(modifier: Modifier = Modifier) {
-    Text(
-        text = "Next2Go Racing",
-        modifier = modifier,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NextToGoAppPreview() {
-    Next2GoTheme {
-        NextToGoApp()
     }
 }

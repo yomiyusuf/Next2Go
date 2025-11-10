@@ -4,8 +4,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.CategoryColor
+import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.RaceDisplayModel
 import com.yomi.next2go.core.domain.mvi.RaceUiState
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
@@ -18,7 +18,7 @@ class RaceScreenTest {
     val composeTestRule = createComposeRule()
 
     private object RaceScreenProvider {
-        
+
         val sampleDisplayRaces = listOf(
             RaceDisplayModel(
                 id = "1",
@@ -31,7 +31,7 @@ class RaceScreenTest {
                 odds = "--",
                 countdownText = "3m 0s",
                 categoryColor = CategoryColor.GREEN,
-                isLive = false
+                isLive = false,
             ),
             RaceDisplayModel(
                 id = "2",
@@ -44,45 +44,45 @@ class RaceScreenTest {
                 odds = "--",
                 countdownText = "5m 0s",
                 categoryColor = CategoryColor.RED,
-                isLive = false
-            )
+                isLive = false,
+            ),
         )
 
         fun default(
             uiState: RaceUiState = RaceUiState(
                 displayRaces = sampleDisplayRaces,
-                isLoading = false
+                isLoading = false,
             ),
-            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { }
+            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { },
         ): @androidx.compose.runtime.Composable () -> Unit = {
             Next2GoTheme {
                 RaceScreen(
                     uiState = uiState,
-                    onIntent = onIntent
+                    onIntent = onIntent,
                 )
             }
         }
 
         fun loading() = default(
-            uiState = RaceUiState(isLoading = true)
+            uiState = RaceUiState(isLoading = true),
         )
 
         fun error(
-            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { }
+            onIntent: (com.yomi.next2go.core.domain.mvi.RaceIntent) -> Unit = { },
         ) = default(
             uiState = RaceUiState(
                 error = "Network error occurred",
-                isLoading = false
+                isLoading = false,
             ),
-            onIntent = onIntent
+            onIntent = onIntent,
         )
 
         fun withSelectedCategories(categories: Set<CategoryId>) = default(
             uiState = RaceUiState(
                 displayRaces = sampleDisplayRaces,
                 selectedCategories = categories,
-                isLoading = false
-            )
+                isLoading = false,
+            ),
         )
     }
 
@@ -143,7 +143,7 @@ class RaceScreenTest {
         composeTestRule
             .onNodeWithText("Network error occurred")
             .assertIsDisplayed()
-            
+
         composeTestRule
             .onNodeWithText("Retry")
             .assertIsDisplayed()
@@ -154,7 +154,7 @@ class RaceScreenTest {
         var capturedIntent: com.yomi.next2go.core.domain.mvi.RaceIntent? = null
 
         composeTestRule.setContent(
-            RaceScreenProvider.default(onIntent = { capturedIntent = it })
+            RaceScreenProvider.default(onIntent = { capturedIntent = it }),
         )
 
         composeTestRule
@@ -168,7 +168,7 @@ class RaceScreenTest {
     @Test
     fun raceScreen_showsSelectedCategoryState() {
         composeTestRule.setContent(
-            RaceScreenProvider.withSelectedCategories(setOf(CategoryId.HORSE))
+            RaceScreenProvider.withSelectedCategories(setOf(CategoryId.HORSE)),
         )
 
         composeTestRule
@@ -181,7 +181,7 @@ class RaceScreenTest {
         var capturedIntent: com.yomi.next2go.core.domain.mvi.RaceIntent? = null
 
         composeTestRule.setContent(
-            RaceScreenProvider.error(onIntent = { capturedIntent = it })
+            RaceScreenProvider.error(onIntent = { capturedIntent = it }),
         )
 
         composeTestRule

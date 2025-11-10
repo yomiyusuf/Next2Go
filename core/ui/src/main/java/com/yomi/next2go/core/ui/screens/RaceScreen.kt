@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.CategoryColor
+import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.domain.model.RaceDisplayModel
 import com.yomi.next2go.core.domain.mvi.RaceIntent
 import com.yomi.next2go.core.domain.mvi.RaceUiState
@@ -39,6 +40,7 @@ import com.yomi.next2go.core.ui.theme.DarkBackground
 import com.yomi.next2go.core.ui.theme.LocalSpacing
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RaceScreen(
     uiState: RaceUiState,
@@ -48,7 +50,7 @@ fun RaceScreen(
     val spacing = LocalSpacing.current
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         // Header
         Box(
@@ -56,38 +58,38 @@ fun RaceScreen(
                 .fillMaxWidth()
                 .background(DarkBackground)
                 .padding(spacing.large),
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.CenterStart,
         ) {
             Text(
                 text = "NEXT TO GO RACING",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(spacing.large)
+                .padding(spacing.large),
         ) {
             // Filter Row
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(spacing.small),
-                contentPadding = PaddingValues(horizontal = 0.dp)
+                contentPadding = PaddingValues(horizontal = 0.dp),
             ) {
                 items(
                     listOf(
                         CategoryId.HORSE to "Horse Racing",
-                        CategoryId.GREYHOUND to "Greyhound Racing", 
-                        CategoryId.HARNESS to "Harness Racing"
-                    )
+                        CategoryId.GREYHOUND to "Greyhound Racing",
+                        CategoryId.HARNESS to "Harness Racing",
+                    ),
                 ) { (categoryId, text) ->
                     FilterChip(
                         text = text,
                         isSelected = uiState.selectedCategories.contains(categoryId),
-                        onClick = { onIntent(RaceIntent.ToggleCategory(categoryId)) }
+                        onClick = { onIntent(RaceIntent.ToggleCategory(categoryId)) },
                     )
                 }
             }
@@ -103,7 +105,7 @@ fun RaceScreen(
                     ErrorState(
                         error = uiState.error ?: "Unknown error",
                         onRetry = { onIntent(RaceIntent.LoadRaces) },
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
                 uiState.displayRaces.isEmpty() -> {
@@ -112,7 +114,7 @@ fun RaceScreen(
                 else -> {
                     RaceList(
                         displayRaces = uiState.displayRaces,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }
@@ -122,11 +124,11 @@ fun RaceScreen(
 
 @Composable
 private fun LoadingState(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }
@@ -136,28 +138,28 @@ private fun LoadingState(
 private fun ErrorState(
     error: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val spacing = LocalSpacing.current
-    
+
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = error,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
-            
+
             Spacer(modifier = Modifier.height(spacing.large))
-            
+
             Button(
-                onClick = onRetry
+                onClick = onRetry,
             ) {
                 Text("Retry")
             }
@@ -167,16 +169,16 @@ private fun ErrorState(
 
 @Composable
 private fun EmptyState(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = "No races available",
             style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -184,14 +186,14 @@ private fun EmptyState(
 @Composable
 private fun RaceList(
     displayRaces: List<RaceDisplayModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val spacing = LocalSpacing.current
 
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(bottom = spacing.large),
-        verticalArrangement = Arrangement.spacedBy(spacing.medium)
+        verticalArrangement = Arrangement.spacedBy(spacing.medium),
     ) {
         items(displayRaces) { displayRace ->
             RaceCard(
@@ -204,12 +206,11 @@ private fun RaceList(
                 odds = displayRace.odds,
                 countdownText = displayRace.countdownText,
                 categoryColor = getCategoryColor(displayRace.categoryColor),
-                isLive = displayRace.isLive
+                isLive = displayRace.isLive,
             )
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -229,7 +230,7 @@ fun RaceScreenPreview() {
                         odds = "--",
                         countdownText = "3m 0s",
                         categoryColor = CategoryColor.GREEN,
-                        isLive = false
+                        isLive = false,
                     ),
                     RaceDisplayModel(
                         id = "2",
@@ -242,13 +243,13 @@ fun RaceScreenPreview() {
                         odds = "--",
                         countdownText = "5m 0s",
                         categoryColor = CategoryColor.RED,
-                        isLive = false
-                    )
+                        isLive = false,
+                    ),
                 ),
                 selectedCategories = setOf(CategoryId.HORSE),
-                isLoading = false
+                isLoading = false,
             ),
-            onIntent = { }
+            onIntent = { },
         )
     }
 }

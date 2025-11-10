@@ -1,11 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt)
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
     namespace = "com.yomi.next2go.core.domain"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -38,6 +40,10 @@ dependencies {
     
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    
+    // Dependency Injection
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
     
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     

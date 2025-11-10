@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.yomi.next2go.core.common"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
