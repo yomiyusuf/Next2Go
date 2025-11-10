@@ -26,6 +26,25 @@ class RaceDisplayModelMapperTest {
         every { mockContext.getString(R.string.category_greyhound_racing) } returns "Greyhound Racing"
         every { mockContext.getString(R.string.category_harness_racing) } returns "Harness Racing"
 
+        every {
+            mockContext.getString(
+                eq(R.string.race_content_description_upcoming),
+                eq("Horse Racing"),
+                eq(8),
+                eq("BATHURST"),
+                eq("2m 30s"),
+            )
+        } returns "Horse Racing race number 8 at BATHURST. Starting in 2m 30s."
+
+        every {
+            mockContext.getString(
+                eq(R.string.race_content_description_live),
+                eq("Greyhound Racing"),
+                eq(3),
+                eq("CANNINGTON"),
+            )
+        } returns "Greyhound Racing race number 3 at CANNINGTON. Race is currently live."
+
         mapper = RaceDisplayModelMapper(mockClock, mockContext)
     }
 

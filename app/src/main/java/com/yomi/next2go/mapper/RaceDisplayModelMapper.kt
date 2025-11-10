@@ -55,15 +55,21 @@ class RaceDisplayModelMapper(
         isLive: Boolean,
         countdownText: String,
     ): String {
-        return buildString {
-            append("$categoryName race ")
-            append("number $raceNumber ")
-            append("at $raceName. ")
-            if (isLive) {
-                append("Race is currently live.")
-            } else {
-                append("Starting in $countdownText.")
-            }
+        return if (isLive) {
+            context.getString(
+                R.string.race_content_description_live,
+                categoryName,
+                raceNumber,
+                raceName,
+            )
+        } else {
+            context.getString(
+                R.string.race_content_description_upcoming,
+                categoryName,
+                raceNumber,
+                raceName,
+                countdownText,
+            )
         }
     }
 }

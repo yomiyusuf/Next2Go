@@ -5,4 +5,8 @@
     <string name="category_horse_racing">Horse Racing</string>
     <string name="category_greyhound_racing">Greyhound Racing</string>
     <string name="category_harness_racing">Harness Racing</string>
+    
+    <!-- Content Descriptions -->
+    <string name="race_content_description_upcoming">%1$s race number %2$d at %3$s. Starting in %4$s.</string>
+    <string name="race_content_description_live">%1$s race number %2$d at %3$s. Race is currently live.</string>
 </resources>
