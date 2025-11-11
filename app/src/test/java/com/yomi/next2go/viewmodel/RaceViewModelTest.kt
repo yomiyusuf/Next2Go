@@ -208,25 +208,6 @@ class RaceViewModelTest {
     }
 
     @Test
-    fun clearFilters_removesAllSelectedCategories() = runTest {
-        every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
-
-        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
-
-        testScheduler.advanceUntilIdle()
-
-        viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
-        testScheduler.advanceUntilIdle()
-        
-        assertTrue(viewModel.uiState.value.selectedCategories.contains(CategoryId.HORSE))
-        
-        viewModel.handleIntent(RaceIntent.ClearFilters)
-        testScheduler.advanceUntilIdle()
-        
-        assertTrue(viewModel.uiState.value.selectedCategories.isEmpty())
-    }
-
-    @Test
     fun toggleCategory_removesExistingCategory() = runTest {
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
 

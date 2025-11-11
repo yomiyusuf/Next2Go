@@ -57,7 +57,6 @@ class RaceViewModel @Inject constructor(
             is RaceIntent.LoadRaces -> loadRaces()
             is RaceIntent.RefreshRaces -> refreshRaces()
             is RaceIntent.ToggleCategory -> toggleCategory(intent.category)
-            is RaceIntent.ClearFilters -> clearFilters()
         }
     }
 
@@ -99,11 +98,6 @@ class RaceViewModel @Inject constructor(
         updateState { it.copy(selectedCategories = newCategories) }
 
         // Reload races with new filter
-        loadRaces()
-    }
-
-    private fun clearFilters() {
-        updateState { it.copy(selectedCategories = emptySet()) }
         loadRaces()
     }
 

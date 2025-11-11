@@ -18,7 +18,6 @@ sealed interface RaceIntent : UiIntent {
     data object LoadRaces : RaceIntent
     data object RefreshRaces : RaceIntent
     data class ToggleCategory(val category: CategoryId) : RaceIntent
-    data object ClearFilters : RaceIntent
 }
 
 sealed interface RaceSideEffect : UiSideEffect {
