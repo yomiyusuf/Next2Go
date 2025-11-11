@@ -3,6 +3,7 @@ package com.yomi.next2go.viewmodel
 import app.cash.turbine.test
 import com.yomi.next2go.core.domain.model.CategoryColor
 import com.yomi.next2go.core.domain.model.CategoryId
+import com.yomi.next2go.core.domain.model.DataError
 import com.yomi.next2go.core.domain.model.Race
 import com.yomi.next2go.core.domain.repository.Result
 import com.yomi.next2go.core.domain.timer.CountdownTimer
@@ -10,6 +11,7 @@ import com.yomi.next2go.core.domain.usecase.GetNextRacesUseCase
 import com.yomi.next2go.mapper.RaceDisplayModelMapper
 import com.yomi.next2go.model.RaceDisplayModel
 import com.yomi.next2go.mvi.RaceIntent
+import com.yomi.next2go.mvi.RaceSideEffect
 import com.yomi.next2go.mvi.RaceUiState
 import io.mockk.every
 import io.mockk.mockk
@@ -75,19 +77,15 @@ class RaceViewModelTest {
 
     @Test
     fun initialState_isCorrect() = runTest {
-        // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
         every { mockDisplayModelMapper.mapToDisplayModel(any()) } returns sampleDisplayRaces[0]
 
         val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
 
-        // When/Then
         viewModel.uiState.test {
-            // Get first state (might be loading or completed depending on timing)
             val firstState = awaitItem()
 
             if (firstState.isLoading) {
-                // If we catch loading state, verify it and wait for completion
                 assertTrue(firstState.displayRaces.isEmpty())
                 assertTrue(firstState.selectedCategories.isEmpty())
                 assertNull(firstState.error)
@@ -98,7 +96,6 @@ class RaceViewModelTest {
                 assertTrue(loadedState.selectedCategories.isEmpty())
                 assertNull(loadedState.error)
             } else {
-                // If loading completed immediately, verify final state
                 assertFalse(firstState.isLoading)
                 assertTrue(firstState.displayRaces.isEmpty())
                 assertTrue(firstState.selectedCategories.isEmpty())
@@ -109,27 +106,22 @@ class RaceViewModelTest {
 
     @Test
     fun loadRaces_success_updatesStateCorrectly() = runTest {
-        // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(sampleRaces))
         every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[0]) } returns sampleDisplayRaces[0]
         every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[1]) } returns sampleDisplayRaces[1]
 
         val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
 
-        // When/Then
         viewModel.uiState.test {
-            // Get first state (might be loading or completed depending on timing)
             val firstState = awaitItem()
 
             if (firstState.isLoading) {
-                // If we catch loading state, wait for success state
                 val loadedState = awaitItem()
                 assertFalse(loadedState.isLoading)
                 assertEquals(2, loadedState.displayRaces.size)
                 assertEquals("Meeting 1", loadedState.displayRaces.first().raceName)
                 assertNull(loadedState.error)
             } else {
-                // If loading completed immediately, verify success state
                 assertFalse(firstState.isLoading)
                 assertEquals(2, firstState.displayRaces.size)
                 assertEquals("Meeting 1", firstState.displayRaces.first().raceName)
@@ -140,32 +132,118 @@ class RaceViewModelTest {
 
     @Test
     fun toggleCategory_addsNewCategory() = runTest {
-        // Given
         every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
 
         val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
 
-        // When/Then
+        testScheduler.advanceUntilIdle()
+
+        viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
+        testScheduler.advanceUntilIdle()
+
+        val finalState = viewModel.uiState.value
+        assertTrue(finalState.selectedCategories.contains(CategoryId.HORSE))
+        assertEquals(1, finalState.selectedCategories.size)
+    }
+
+    @Test
+    fun loadRaces_error_updatesStateAndEmitsSideEffect() = runTest {
+        val error = DataError.NetworkUnavailable
+        every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Error(error))
+
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
+
         viewModel.uiState.test {
-            // Wait for initial loading to complete
             val firstState = awaitItem()
+
             if (firstState.isLoading) {
-                awaitItem() // Wait for loaded state
+                val errorState = awaitItem()
+                assertFalse(errorState.isLoading)
+                assertTrue(errorState.displayRaces.isEmpty())
+                assertEquals(error.message, errorState.error)
+            } else {
+                assertFalse(firstState.isLoading)
+                assertTrue(firstState.displayRaces.isEmpty())
+                assertEquals(error.message, firstState.error)
             }
+        }
 
-            // Trigger category toggle
-            viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
-
-            // Consume states until we have a non-loading state with HORSE category
-            var finalState: RaceUiState
-            do {
-                finalState = awaitItem()
-            } while (!finalState.selectedCategories.contains(CategoryId.HORSE) || finalState.isLoading)
-
-            // Verify final state
-            assertFalse(finalState.isLoading)
-            assertTrue(finalState.selectedCategories.contains(CategoryId.HORSE))
-            assertEquals(1, finalState.selectedCategories.size)
+        viewModel.sideEffect.test {
+            val sideEffect = awaitItem()
+            assertEquals(RaceSideEffect.ShowError(error.message), sideEffect)
         }
     }
+
+    @Test
+    fun refreshRaces_success_updatesStateAndEmitsRefreshComplete() = runTest {
+        every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(sampleRaces))
+        every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[0]) } returns sampleDisplayRaces[0]
+        every { mockDisplayModelMapper.mapToDisplayModel(sampleRaces[1]) } returns sampleDisplayRaces[1]
+
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
+
+        viewModel.uiState.test {
+            val firstState = awaitItem()
+            if (firstState.isLoading) {
+                awaitItem()
+            }
+
+            viewModel.handleIntent(RaceIntent.RefreshRaces)
+
+            var refreshState: RaceUiState
+            do {
+                refreshState = awaitItem()
+            } while (refreshState.isRefreshing)
+
+            assertFalse(refreshState.isLoading)
+            assertFalse(refreshState.isRefreshing)
+            assertEquals(2, refreshState.displayRaces.size)
+            assertNull(refreshState.error)
+        }
+
+        viewModel.sideEffect.test {
+            val sideEffect = awaitItem()
+            assertEquals(RaceSideEffect.ShowRefreshComplete, sideEffect)
+        }
+    }
+
+    @Test
+    fun clearFilters_removesAllSelectedCategories() = runTest {
+        every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
+
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
+
+        testScheduler.advanceUntilIdle()
+
+        viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
+        testScheduler.advanceUntilIdle()
+        
+        assertTrue(viewModel.uiState.value.selectedCategories.contains(CategoryId.HORSE))
+        
+        viewModel.handleIntent(RaceIntent.ClearFilters)
+        testScheduler.advanceUntilIdle()
+        
+        assertTrue(viewModel.uiState.value.selectedCategories.isEmpty())
+    }
+
+    @Test
+    fun toggleCategory_removesExistingCategory() = runTest {
+        every { mockUseCase.executeStream(any(), any()) } returns flowOf(Result.Success(emptyList()))
+
+        val viewModel = RaceViewModel(mockUseCase, mockDisplayModelMapper, mockCountdownTimer)
+
+        testScheduler.advanceUntilIdle()
+
+        viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
+        testScheduler.advanceUntilIdle()
+        
+        assertTrue(viewModel.uiState.value.selectedCategories.contains(CategoryId.HORSE))
+        
+        viewModel.handleIntent(RaceIntent.ToggleCategory(CategoryId.HORSE))
+        testScheduler.advanceUntilIdle()
+        
+        assertFalse(viewModel.uiState.value.selectedCategories.contains(CategoryId.HORSE))
+        assertTrue(viewModel.uiState.value.selectedCategories.isEmpty())
+    }
+
 }

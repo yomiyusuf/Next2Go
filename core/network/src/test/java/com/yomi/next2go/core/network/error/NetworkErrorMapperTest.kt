@@ -80,7 +80,7 @@ class NetworkErrorMapperTest {
         assertTrue(result is DataError.HttpError)
         val httpError = result as DataError.HttpError
         assertEquals(404, httpError.code)
-        assertEquals("HTTP 404 Response.error()", httpError.message)
+        assertEquals("Response.error()", httpError.message)
     }
 
     @Test

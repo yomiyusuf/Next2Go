@@ -85,6 +85,7 @@ class GetNextRacesUseCaseTest {
 
         val mockRepository = mockk<RaceRepository> {
             every { getNextToGoRacesStream(10) } returns flowOf(Result.Success(listOf(horseRace, greyhoundRace)))
+            every { getNextToGoRacesStream(10, setOf(CategoryId.HORSE)) } returns flowOf(Result.Success(listOf(horseRace)))
         }
 
         val useCase = GetNextRacesUseCase(mockRepository, mockClock)

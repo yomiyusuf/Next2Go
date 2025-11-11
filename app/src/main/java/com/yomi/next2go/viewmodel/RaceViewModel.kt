@@ -26,22 +26,22 @@ class RaceViewModel @Inject constructor(
     initialState = RaceUiState(),
 ) {
 
+    companion object {
+        private const val REFRESH_INTERVAL = 30_000L
+    }
+
     private var currentRaces: List<Race> = emptyList()
 
     init {
         handleIntent(RaceIntent.LoadRaces)
-
-        // Start countdown timer
         countdownTimer.start(::updateCountdowns)
-
-        // Start auto-refresh timer (every 30 seconds)
         startAutoRefresh()
     }
 
     private fun startAutoRefresh() {
         viewModelScope.launch {
             while (true) {
-                delay(30_000L) // 30 seconds
+                delay(REFRESH_INTERVAL)
                 refreshRaces()
             }
         }
@@ -128,13 +128,13 @@ class RaceViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         isRefreshing = false,
-                        error = result.error.message ?: "Unknown error occurred",
+                        error = result.error.message,
                     )
                 }
                 viewModelScope.launch {
                     emitSideEffect(
                         RaceSideEffect.ShowError(
-                            result.error.message ?: "Failed to load races",
+                            result.error.message,
                         ),
                     )
                 }

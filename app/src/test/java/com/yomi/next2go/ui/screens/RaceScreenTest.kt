@@ -1,8 +1,12 @@
 package com.yomi.next2go.ui.screens
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yomi.next2go.core.domain.model.CategoryColor
@@ -105,16 +109,16 @@ class RaceScreenTest {
         composeTestRule.setContent(RaceScreenProvider.default())
 
         composeTestRule
-            .onNodeWithText("Horse Racing")
-            .assertIsDisplayed()
+            .onAllNodesWithText("Horse Racing")
+            .assertCountEquals(3)
 
         composeTestRule
-            .onNodeWithText("Greyhound Racing")
-            .assertIsDisplayed()
+            .onAllNodesWithText("Greyhound Racing")
+            .assertCountEquals(1)
 
         composeTestRule
-            .onNodeWithText("Harness Racing")
-            .assertIsDisplayed()
+            .onAllNodesWithText("Harness Racing")
+            .assertCountEquals(1)
     }
 
     @Test
@@ -160,7 +164,8 @@ class RaceScreenTest {
         )
 
         composeTestRule
-            .onNodeWithText("Horse Racing")
+            .onAllNodesWithText("Horse Racing")
+            .filterToOne(hasClickAction())
             .performClick()
 
         assert(capturedIntent is RaceIntent.ToggleCategory)
@@ -174,8 +179,8 @@ class RaceScreenTest {
         )
 
         composeTestRule
-            .onNodeWithText("Horse Racing")
-            .assertIsDisplayed()
+            .onAllNodesWithText("Horse Racing")
+            .assertCountEquals(3)
     }
 
     @Test

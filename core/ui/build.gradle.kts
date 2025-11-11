@@ -22,6 +22,12 @@ android {
         jvmTarget = "17"
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+    
     buildFeatures {
         compose = true
         buildConfig = false
@@ -32,6 +38,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:domain"))
     
+    implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

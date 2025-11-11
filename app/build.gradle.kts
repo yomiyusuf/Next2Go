@@ -50,6 +50,12 @@ android {
         buildConfig = false
     }
     
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+    
     packaging {
         resources {
             excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"

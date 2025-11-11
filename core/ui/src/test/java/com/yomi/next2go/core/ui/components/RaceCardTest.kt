@@ -1,10 +1,10 @@
 package com.yomi.next2go.core.ui.components
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import com.yomi.next2go.core.domain.model.CategoryId
 import com.yomi.next2go.core.ui.theme.Next2GoTheme
 import org.junit.Rule
 import org.junit.Test
@@ -21,28 +21,20 @@ class RaceCardTest {
 
     private object RaceCardProvider {
         fun default(
-            raceName: String = "BATHURST R8",
+            raceName: String = "BATHURST",
             raceNumber: Int = 8,
-            runnerName: String = "Snipers Fire",
-            runnerNumber: Int = 6,
-            jockeyName: String = "Brad Hewitt",
-            bestTime: String = "16.11",
-            odds: String = "1.35",
             countdownText: String = "2m 33s",
-            categoryColor: Color = Color.Green,
+            categoryId: CategoryId = CategoryId.HORSE,
+            categoryName: String = "Horse Racing",
             isLive: Boolean = false,
         ): @androidx.compose.runtime.Composable () -> Unit = {
             Next2GoTheme {
                 RaceCard(
                     raceName = raceName,
                     raceNumber = raceNumber,
-                    runnerName = runnerName,
-                    runnerNumber = runnerNumber,
-                    jockeyName = jockeyName,
-                    bestTime = bestTime,
-                    odds = odds,
                     countdownText = countdownText,
-                    categoryColor = categoryColor,
+                    categoryId = categoryId,
+                    categoryName = categoryName,
                     isLive = isLive,
                 )
             }
@@ -53,12 +45,10 @@ class RaceCardTest {
             isLive = true,
         )
 
-        fun withCustomData(
-            runnerName: String,
-            odds: String,
-        ) = default(
-            runnerName = runnerName,
-            odds = odds,
+        fun greyhound() = default(
+            categoryId = CategoryId.GREYHOUND,
+            categoryName = "Greyhound Racing",
+            raceName = "KILKENNY",
         )
     }
 
@@ -67,33 +57,25 @@ class RaceCardTest {
         composeTestRule.setContent(RaceCardProvider.default())
 
         composeTestRule
-            .onNodeWithText("BATHURST R8")
+            .onNodeWithText("BATHURST")
             .assertIsDisplayed()
     }
 
     @Test
-    fun raceCard_displaysRunnerDetails() {
+    fun raceCard_displaysCategoryName() {
         composeTestRule.setContent(RaceCardProvider.default())
 
         composeTestRule
-            .onNodeWithText("6. Snipers Fire (Fr8)")
-            .assertIsDisplayed()
-
-        composeTestRule
-            .onNodeWithText("D: Brad Hewitt")
-            .assertIsDisplayed()
-
-        composeTestRule
-            .onNodeWithText("Best Time: 16.11")
+            .onNodeWithText("Horse Racing")
             .assertIsDisplayed()
     }
 
     @Test
-    fun raceCard_displaysOdds() {
+    fun raceCard_displaysRaceNumber() {
         composeTestRule.setContent(RaceCardProvider.default())
 
         composeTestRule
-            .onNodeWithText("1.35")
+            .onNodeWithText("R8")
             .assertIsDisplayed()
     }
 
@@ -116,29 +98,15 @@ class RaceCardTest {
     }
 
     @Test
-    fun raceCard_displaysCategoryIndicator() {
-        composeTestRule.setContent(RaceCardProvider.default())
+    fun raceCard_displaysGreyhoundCategory() {
+        composeTestRule.setContent(RaceCardProvider.greyhound())
 
         composeTestRule
-            .onNodeWithContentDescription("Racing category indicator")
-            .assertIsDisplayed()
-    }
-
-    @Test
-    fun raceCard_displaysCustomRunnerData() {
-        composeTestRule.setContent(
-            RaceCardProvider.withCustomData(
-                runnerName = "Thunder Bolt",
-                odds = "3.50",
-            ),
-        )
-
-        composeTestRule
-            .onNodeWithText("6. Thunder Bolt (Fr8)")
+            .onNodeWithText("Greyhound Racing")
             .assertIsDisplayed()
 
         composeTestRule
-            .onNodeWithText("3.50")
+            .onNodeWithText("KILKENNY")
             .assertIsDisplayed()
     }
 }
